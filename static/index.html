@@ -3,222 +3,218 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ListCraft — E-Commerce Listing Generator</title>
+  <title>ListCraft — Fine Commerce Composition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <div class="app-layout">
-    <!-- Top Navigation Bar -->
-    <header class="top-navbar">
-      <div class="navbar-inner">
-        <div class="brand">
-          <div class="brand-logo" aria-hidden="true">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-              <path d="M3 6h18"/>
-              <path d="M16 10a4 4 0 0 1-8 0"/>
-            </svg>
-          </div>
-          <div class="brand-info">
-            <span class="brand-name">ListCraft</span>
-            <span class="brand-badge">Local Engine</span>
-          </div>
+  <div class="atelier-root">
+    
+    <!-- Masthead -->
+    <header class="atelier-header">
+      <div class="header-container">
+        <div class="masthead-brand">
+          <h1 class="brand-title">ListCraft</h1>
+          <span class="brand-divider" aria-hidden="true">/</span>
+          <span class="brand-edition">Catalog Composition Atelier</span>
         </div>
 
-        <div class="flow-stepper" aria-label="Workflow: Input to Export">
-          <span class="step-item active">Input</span>
-          <svg class="step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          <span class="step-item">Generate</span>
-          <svg class="step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          <span class="step-item">Review</span>
-          <svg class="step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-          <span class="step-item">Export</span>
-        </div>
-
-        <div class="header-status">
-          <div class="status-chip" id="ollamaStatus">
+        <div class="masthead-meta">
+          <div class="status-indicator" id="ollamaStatus" title="Local Inference Connection">
             <span class="status-dot"></span>
-            <span id="ollamaStatusText">Checking Ollama...</span>
+            <span id="ollamaStatusText" class="status-text">Ollama Active</span>
           </div>
-          <div class="model-badge" id="activeModelBadge">
-            <span class="badge-label">Model</span>
+          <span class="meta-separator" aria-hidden="true">·</span>
+          <div class="provenance-tag" id="activeModelBadge">
+            <span class="badge-label">Engine</span>
             <span class="badge-value" id="activeModelName">llama3.2:3b</span>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- Main Studio Workspace -->
-    <main class="main-content">
-      <div class="studio-workspace">
-        
-        <!-- Left: Workbench Configuration Panel -->
-        <aside class="workbench-panel">
-          <div class="panel-card">
+    <!-- Main Workspace -->
+    <main class="atelier-main">
+      <div class="workspace-grid">
+
+        <!-- Left Column: The Workbench / Specifications Form -->
+        <aside class="workbench-col">
+          <div class="workbench-surface">
             
-            <form id="listingForm" class="product-form" novalidate>
-              <!-- Presets Header Strip -->
-              <div class="section-block">
-                <div class="presets-row">
-                  <span class="section-label">Presets</span>
-                  <div class="sample-pills">
-                    <button type="button" class="sample-btn active" id="btnSampleBottle">Water Bottle</button>
-                    <button type="button" class="sample-btn" id="btnSampleWallet">Leather Wallet</button>
-                    <button type="button" class="sample-btn" id="btnSampleDesk">Ergo Desk Lamp</button>
-                  </div>
+            <form id="listingForm" class="atelier-form" novalidate>
+              
+              <!-- Curated Specimens / Presets -->
+              <div class="form-group form-group--presets">
+                <div class="group-header">
+                  <span class="group-eyebrow">Curated Specimens</span>
+                </div>
+                <div class="preset-triggers">
+                  <button type="button" class="sample-btn active" id="btnSampleBottle">
+                    <span class="preset-index">01</span>
+                    <span class="preset-name">Water Bottle</span>
+                  </button>
+                  <button type="button" class="sample-btn" id="btnSampleWallet">
+                    <span class="preset-index">02</span>
+                    <span class="preset-name">Leather Wallet</span>
+                  </button>
+                  <button type="button" class="sample-btn" id="btnSampleDesk">
+                    <span class="preset-index">03</span>
+                    <span class="preset-name">Desk Lamp</span>
+                  </button>
                 </div>
               </div>
 
-              <!-- Marketplace Selection -->
-              <div class="section-block">
-                <div class="label-row">
-                  <label for="marketplaceSelect" class="form-label">Target Marketplace</label>
-                  <span class="field-hint" id="marketplaceHint">Amazon Title Limit: 200 chars</span>
+              <!-- Target Marketplace -->
+              <div class="form-group">
+                <div class="group-header">
+                  <label for="marketplaceSelect" class="group-label">Target Platform</label>
                 </div>
-                <div class="marketplace-selector-wrapper">
+                
+                <div class="platform-selector-box">
                   <div class="marketplace-pills" id="marketplacePills">
                     <button type="button" class="marketplace-pill active" data-market="amazon">
-                      <span class="pill-indicator" aria-hidden="true"></span>
-                      <span class="pill-title">Amazon</span>
-                      <span class="pill-meta">200 chars</span>
+                      <span class="pill-dot" aria-hidden="true"></span>
+                      <span class="pill-name">Amazon</span>
+                      <span class="pill-limit">200 chars</span>
                     </button>
                     <button type="button" class="marketplace-pill" data-market="flipkart">
-                      <span class="pill-indicator" aria-hidden="true"></span>
-                      <span class="pill-title">Flipkart</span>
-                      <span class="pill-meta">200 chars</span>
+                      <span class="pill-dot" aria-hidden="true"></span>
+                      <span class="pill-name">Flipkart</span>
+                      <span class="pill-limit">200 chars</span>
                     </button>
                     <button type="button" class="marketplace-pill" data-market="etsy">
-                      <span class="pill-indicator" aria-hidden="true"></span>
-                      <span class="pill-title">Etsy</span>
-                      <span class="pill-meta">140 chars</span>
+                      <span class="pill-dot" aria-hidden="true"></span>
+                      <span class="pill-name">Etsy</span>
+                      <span class="pill-limit">140 chars</span>
                     </button>
                     <button type="button" class="marketplace-pill" data-market="shopify">
-                      <span class="pill-indicator" aria-hidden="true"></span>
-                      <span class="pill-title">Shopify</span>
-                      <span class="pill-meta">Flexible</span>
+                      <span class="pill-dot" aria-hidden="true"></span>
+                      <span class="pill-name">Shopify</span>
+                      <span class="pill-limit">Flexible</span>
                     </button>
                   </div>
-                  <!-- Hidden native select for form data and script sync -->
-                  <div class="sr-select-container">
+
+                  <div class="platform-guideline-note" id="marketplaceHint">Amazon Title Limit: 200 chars</div>
+
+                  <!-- Native select for accessible script synchronization -->
+                  <div class="sr-hidden-select">
                     <select id="marketplaceSelect" name="marketplace" required>
-                      <option value="amazon" selected>Amazon (Factual, 5 Structured Bullets, 200 Char Limit)</option>
-                      <option value="flipkart">Flipkart (Value-Driven, Spec-Focused, 200 Char Limit)</option>
-                      <option value="etsy">Etsy (Handmade / Story, Aesthetic, 140 Char Limit)</option>
-                      <option value="shopify">Shopify (D2C Brand Pitch, Conversational, Flexible)</option>
+                      <option value="amazon" selected>Amazon (200 char limit, factual & structured)</option>
+                      <option value="flipkart">Flipkart (200 char limit, specs & discovery)</option>
+                      <option value="etsy">Etsy (140 char limit, aesthetic & story)</option>
+                      <option value="shopify">Shopify (Flexible, brand pitch)</option>
                     </select>
                   </div>
                 </div>
               </div>
 
               <!-- Product Name -->
-              <div class="section-block">
-                <div class="label-row">
-                  <label for="productName" class="form-label">Product Name / Concept <span class="required" aria-hidden="true">*</span></label>
-                  <span class="char-counter" id="productNameCount">0 chars</span>
+              <div class="form-group">
+                <div class="group-header">
+                  <label for="productName" class="group-label">Product Name / Concept <span class="required-mark" aria-hidden="true">*</span></label>
+                  <span class="char-tally" id="productNameCount">0 chars</span>
                 </div>
                 <input 
                   type="text" 
                   id="productName" 
                   name="product" 
-                  class="form-input"
+                  class="text-input" 
                   placeholder="e.g. Stainless Steel Water Bottle" 
                   value="Stainless Steel Water Bottle" 
                   required
                 >
               </div>
 
-              <!-- Category & Price Inline Row -->
-              <div class="section-block form-row-split">
-                <div class="form-col">
-                  <label for="categoryInput" class="form-label">Category</label>
+              <!-- Category & Price -->
+              <div class="form-row-duo">
+                <div class="form-group">
+                  <label for="categoryInput" class="group-label">Category</label>
                   <input 
                     type="text" 
                     id="categoryInput" 
                     name="category" 
-                    class="form-input"
-                    placeholder="e.g. Sports & Outdoors / Drinkware" 
+                    class="text-input" 
+                    placeholder="e.g. Sports & Outdoors" 
                     value="Sports & Outdoors / Drinkware"
                   >
                 </div>
-                <div class="form-col">
-                  <label for="priceInput" class="form-label">Target Price</label>
+                <div class="form-group">
+                  <label for="priceInput" class="group-label">Target Price</label>
                   <input 
                     type="text" 
                     id="priceInput" 
                     name="price" 
-                    class="form-input"
-                    placeholder="e.g. $24.99 / ₹1,499" 
+                    class="text-input" 
+                    placeholder="e.g. $24.99" 
                     value="$24.99"
                   >
                 </div>
               </div>
 
-              <!-- Specifications & Raw Features -->
-              <div class="section-block">
-                <div class="label-row">
-                  <label for="specsInput" class="form-label">Specifications &amp; Features <span class="required" aria-hidden="true">*</span></label>
-                  <span class="char-counter" id="specsCharCount">0 chars</span>
+              <!-- Specifications -->
+              <div class="form-group">
+                <div class="group-header">
+                  <label for="specsInput" class="group-label">Features &amp; Technical Attributes <span class="required-mark" aria-hidden="true">*</span></label>
+                  <span class="char-tally" id="specsCharCount">0 chars</span>
                 </div>
                 <textarea 
                   id="specsInput" 
                   name="specs" 
-                  class="form-textarea"
+                  class="text-area" 
                   rows="5" 
-                  placeholder="Paste raw bullet points, specs, materials, dimensions, certifications..." 
+                  placeholder="Enter specifications, materials, capacities, certifications, or dimensions..."
                   required
                 >1L capacity (32 oz), double-wall vacuum insulated, 18/8 food-grade stainless steel, matte black powder-coat finish, keeps cold for 24 hours, hot for 12 hours, leak-proof chug cap with carry handle, BPA-free, sweat-proof exterior, fits standard car cup holders.</textarea>
               </div>
 
-              <!-- Primary Form Actions -->
-              <div class="form-actions-stack">
+              <!-- Primary Form CTAs -->
+              <div class="action-stack">
                 <button type="submit" class="btn-primary" id="generateBtn">
-                  <span class="btn-text">Generate Listing with Local LLM</span>
+                  <span class="btn-text">Generate Platform Listing</span>
                   <span class="btn-spinner hidden" aria-hidden="true"></span>
                 </button>
                 <button type="button" class="btn-secondary" id="btnGenerateExport">
-                  <svg class="btn-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                  </svg>
-                  <span class="btn-text">Generate &amp; Export in One Click</span>
+                  <span class="btn-text">Generate &amp; Export Markdown</span>
                 </button>
               </div>
 
-              <!-- Security Footnote -->
-              <div class="privacy-footnote">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                </svg>
-                <span>Runs 100% locally via Ollama. No data leaves your machine.</span>
+              <!-- Quiet Local Engine Footnote -->
+              <div class="provenance-footnote">
+                <span class="lock-icon" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                  </svg>
+                </span>
+                <span>Synthesized on-device via local weights. Zero data leaves your machine.</span>
               </div>
-            </form>
 
+            </form>
           </div>
         </aside>
 
-        <!-- Right: Studio Canvas (Document Output) -->
-        <section class="canvas-panel">
-          <div class="canvas-card">
-            
-            <!-- Canvas Toolbar -->
-            <div class="canvas-toolbar">
-              <div class="toolbar-title-group">
-                <h2 class="canvas-title">Marketplace Listing</h2>
-                <span class="badge-pill" id="resultMarketplaceBadge">Amazon Ready</span>
+        <!-- Right Column: The Document Sheet (Editorial Output) -->
+        <section class="document-col">
+          <div class="document-sheet">
+
+            <!-- Sheet Top Toolbar -->
+            <div class="sheet-toolbar">
+              <div class="sheet-meta-group">
+                <span class="sheet-label">Listing Document</span>
+                <span class="badge-edition" id="resultMarketplaceBadge">Amazon Ready</span>
               </div>
-              <div class="toolbar-actions">
-                <button type="button" class="btn-action" id="btnCopyAll" disabled>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <div class="sheet-actions">
+                <button type="button" class="btn-sheet" id="btnCopyAll" disabled>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
                     <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
                   </svg>
                   <span>Copy Complete Listing</span>
                 </button>
-                <button type="button" class="btn-action" id="btnExport" disabled>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <button type="button" class="btn-sheet" id="btnExport" disabled>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7 10 12 15 17 10"/>
                     <line x1="12" x2="12" y1="15" y2="3"/>
@@ -228,244 +224,170 @@
               </div>
             </div>
 
-            <!-- 1. Blueprint Empty State -->
-            <div class="empty-state" id="emptyState">
-              <div class="blueprint-card">
-                <div class="blueprint-header">
-                  <div class="blueprint-icon-box">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                      <polyline points="14 2 14 8 20 8"/>
-                      <line x1="16" x2="8" y1="13" y2="13"/>
-                      <line x1="16" x2="8" y1="17" y2="17"/>
-                      <polyline points="10 9 9 9 8 9"/>
-                    </svg>
-                  </div>
-                  <div class="blueprint-title-wrap">
-                    <h3>Listing Blueprint</h3>
-                    <p>Enter product specifications on the left and select <strong>Generate Listing</strong> to produce a complete platform-ready document.</p>
-                  </div>
+            <!-- Empty State: Craftsman's Blueprint -->
+            <div class="sheet-empty" id="emptyState">
+              <div class="blueprint-frame">
+                <div class="blueprint-heading-block">
+                  <span class="blueprint-tag">Composition Blueprint</span>
+                  <h2 class="blueprint-headline">The Anatomy of an Indexed Listing</h2>
+                  <p class="blueprint-subhead">Input product attributes on the left to synthesize a publication-ready catalog document tailored to marketplace search algorithms.</p>
                 </div>
 
-                <div class="blueprint-zones">
-                  <div class="zone-item">
-                    <div class="zone-num">01</div>
-                    <div class="zone-meta">
-                      <span class="zone-name">Optimized Title</span>
-                      <span class="zone-desc">Strictly adheres to target platform character limits with brand and spec indexing.</span>
+                <div class="blueprint-quad">
+                  <div class="quad-item">
+                    <div class="quad-num">I</div>
+                    <div class="quad-content">
+                      <h3 class="quad-title">Algorithmic Title</h3>
+                      <p class="quad-desc">Engineered within strict character limits with brand, key attribute, and variant keywords structured for search index ranking.</p>
                     </div>
                   </div>
-                  <div class="zone-item">
-                    <div class="zone-num">02</div>
-                    <div class="zone-meta">
-                      <span class="zone-name">5 High-Conversion Bullets</span>
-                      <span class="zone-desc">Capitalized feature anchors with scannable benefit-driven proof points.</span>
+
+                  <div class="quad-item">
+                    <div class="quad-num">II</div>
+                    <div class="quad-content">
+                      <h3 class="quad-title">5 Feature Anchors</h3>
+                      <p class="quad-desc">Capitalized benefit anchors followed by scannable, concrete proof points that eliminate buyer purchase hesitation.</p>
                     </div>
                   </div>
-                  <div class="zone-item">
-                    <div class="zone-num">03</div>
-                    <div class="zone-meta">
-                      <span class="zone-name">Product Description</span>
-                      <span class="zone-desc">Structured narrative highlighting technical durability, daily use cases, and care.</span>
+
+                  <div class="quad-item">
+                    <div class="quad-num">III</div>
+                    <div class="quad-content">
+                      <h3 class="quad-title">Editorial Narrative</h3>
+                      <p class="quad-desc">A structured product story setting dimensions, daily utility, craftsmanship, and materials in natural context.</p>
                     </div>
                   </div>
-                  <div class="zone-item">
-                    <div class="zone-num">04</div>
-                    <div class="zone-meta">
-                      <span class="zone-name">Backend Search Terms</span>
-                      <span class="zone-desc">High-intent search keywords formatted for direct catalog indexing.</span>
+
+                  <div class="quad-item">
+                    <div class="quad-num">IV</div>
+                    <div class="quad-content">
+                      <h3 class="quad-title">Backend Index Terms</h3>
+                      <p class="quad-desc">De-duplicated, high-intent discovery tags ready for backend catalog search ingestion without punctuation waste.</p>
                     </div>
                   </div>
                 </div>
 
-                <div class="blueprint-callout">
-                  <span class="callout-label">Fast test:</span>
-                  <span>Click any preset above the form (Water Bottle, Leather Wallet, Ergo Desk Lamp) to immediately test generation.</span>
+                <div class="blueprint-guide">
+                  <span class="guide-lead">Quick Demonstration:</span>
+                  <span class="guide-text">Choose any specimen above (Water Bottle, Leather Wallet, Desk Lamp) and click Generate to evaluate the output.</span>
                 </div>
               </div>
             </div>
 
-            <!-- 2. Loading Skeleton State (Active during LLM Generation) -->
-            <div class="loading-skeleton hidden" id="loadingSkeleton" aria-live="polite" aria-busy="true">
-              <div class="skeleton-header-msg">
-                <div class="skeleton-pulse-dot"></div>
-                <span>Local open-weight LLM is synthesizing your listing...</span>
+            <!-- Loading Skeleton: Subtle Warm Parchment Shimmer -->
+            <div class="sheet-loading hidden" id="loadingSkeleton" aria-live="polite" aria-busy="true">
+              <div class="loading-marquee">
+                <span class="loading-pulse-pip"></span>
+                <span class="loading-status-text">Synthesizing catalog document with local open-weight model...</span>
               </div>
 
-              <!-- Skeleton Title Card -->
-              <div class="skeleton-card">
-                <div class="skeleton-line-header">
-                  <div class="skeleton-bar" style="width: 140px; height: 16px;"></div>
-                  <div class="skeleton-bar" style="width: 80px; height: 16px;"></div>
-                </div>
-                <div class="skeleton-bar" style="width: 90%; height: 22px; margin-top: 12px;"></div>
-                <div class="skeleton-bar" style="width: 60%; height: 22px; margin-top: 8px;"></div>
-                <div class="skeleton-bar" style="width: 100%; height: 4px; margin-top: 16px;"></div>
+              <div class="skeleton-block">
+                <div class="skeleton-shimmer-bar" style="width: 140px; height: 12px; margin-bottom: 16px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 92%; height: 32px; margin-bottom: 10px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 65%; height: 32px; margin-bottom: 16px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 100%; height: 2px;"></div>
               </div>
 
-              <!-- Skeleton Bullets Card -->
-              <div class="skeleton-card">
-                <div class="skeleton-line-header">
-                  <div class="skeleton-bar" style="width: 160px; height: 16px;"></div>
-                  <div class="skeleton-bar" style="width: 70px; height: 16px;"></div>
-                </div>
-                <div class="skeleton-bullets-list">
-                  <div class="skeleton-bullet-row">
-                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
-                    <div class="skeleton-bar" style="width: 92%; height: 16px;"></div>
-                  </div>
-                  <div class="skeleton-bullet-row">
-                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
-                    <div class="skeleton-bar" style="width: 85%; height: 16px;"></div>
-                  </div>
-                  <div class="skeleton-bullet-row">
-                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
-                    <div class="skeleton-bar" style="width: 95%; height: 16px;"></div>
-                  </div>
-                  <div class="skeleton-bullet-row">
-                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
-                    <div class="skeleton-bar" style="width: 78%; height: 16px;"></div>
-                  </div>
-                  <div class="skeleton-bullet-row">
-                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
-                    <div class="skeleton-bar" style="width: 88%; height: 16px;"></div>
-                  </div>
-                </div>
+              <div class="skeleton-block">
+                <div class="skeleton-shimmer-bar" style="width: 180px; height: 12px; margin-bottom: 20px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 100%; height: 20px; margin-bottom: 14px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 95%; height: 20px; margin-bottom: 14px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 98%; height: 20px; margin-bottom: 14px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 90%; height: 20px; margin-bottom: 14px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 92%; height: 20px;"></div>
               </div>
 
-              <!-- Skeleton Description Card -->
-              <div class="skeleton-card">
-                <div class="skeleton-line-header">
-                  <div class="skeleton-bar" style="width: 150px; height: 16px;"></div>
-                  <div class="skeleton-bar" style="width: 60px; height: 16px;"></div>
-                </div>
-                <div class="skeleton-bar" style="width: 100%; height: 16px; margin-top: 12px;"></div>
-                <div class="skeleton-bar" style="width: 96%; height: 16px; margin-top: 8px;"></div>
-                <div class="skeleton-bar" style="width: 74%; height: 16px; margin-top: 8px;"></div>
-              </div>
-
-              <!-- Skeleton Keywords Card -->
-              <div class="skeleton-card">
-                <div class="skeleton-line-header">
-                  <div class="skeleton-bar" style="width: 170px; height: 16px;"></div>
-                  <div class="skeleton-bar" style="width: 90px; height: 16px;"></div>
-                </div>
-                <div class="skeleton-pill-row">
-                  <div class="skeleton-bar" style="width: 110px; height: 26px; border-radius: 9999px;"></div>
-                  <div class="skeleton-bar" style="width: 130px; height: 26px; border-radius: 9999px;"></div>
-                  <div class="skeleton-bar" style="width: 95px; height: 26px; border-radius: 9999px;"></div>
-                  <div class="skeleton-bar" style="width: 120px; height: 26px; border-radius: 9999px;"></div>
-                  <div class="skeleton-bar" style="width: 85px; height: 26px; border-radius: 9999px;"></div>
-                </div>
+              <div class="skeleton-block">
+                <div class="skeleton-shimmer-bar" style="width: 160px; height: 12px; margin-bottom: 16px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 100%; height: 16px; margin-bottom: 8px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 96%; height: 16px; margin-bottom: 8px;"></div>
+                <div class="skeleton-shimmer-bar" style="width: 80%; height: 16px;"></div>
               </div>
             </div>
 
-            <!-- 3. Generated Results Container -->
-            <div class="results-container hidden" id="resultsContainer">
-              
-              <!-- Section 1: Optimized Title -->
-              <div class="result-card">
-                <div class="card-header">
-                  <div class="card-label">
-                    <span class="section-icon" aria-hidden="true">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/>
-                        <path d="M7 7h.01"/>
-                      </svg>
-                    </span>
-                    <h3>Optimized Title</h3>
-                    <span class="char-count-pill" id="titleCharCount">0 / 200 chars</span>
+            <!-- Results Container: The Rendered Fine Manuscript -->
+            <div class="sheet-results hidden" id="resultsContainer">
+
+              <!-- Section 1: Title -->
+              <article class="doc-section doc-section--title">
+                <header class="doc-section-header">
+                  <div class="section-title-wrap">
+                    <span class="section-eyebrow">Title Specification</span>
+                    <span class="char-status-badge" id="titleCharCount">0 / 200 chars</span>
                   </div>
-                  <div class="card-header-actions">
-                    <button class="btn-copy" data-copy-target="listingTitle">Copy</button>
-                  </div>
+                  <button type="button" class="btn-copy" data-copy-target="listingTitle">
+                    <span>Copy</span>
+                  </button>
+                </header>
+                
+                <div class="doc-title-body">
+                  <p class="title-display" id="listingTitle"></p>
                 </div>
-                <div class="card-body">
-                  <p class="title-text" id="listingTitle"></p>
-                </div>
-                <div class="title-progress-track">
+
+                <div class="title-progress-rail" aria-hidden="true">
                   <div class="title-progress-bar" id="titleProgressBar"></div>
                 </div>
-              </div>
+              </article>
 
-              <!-- Section 2: 5 Structured Bullets -->
-              <div class="result-card">
-                <div class="card-header">
-                  <div class="card-label">
-                    <span class="section-icon" aria-hidden="true">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="8" x2="21" y1="6" y2="6"/>
-                        <line x1="8" x2="21" y1="12" y2="12"/>
-                        <line x1="8" x2="21" y1="18" y2="18"/>
-                        <line x1="3" x2="3.01" y1="6" y2="6"/>
-                        <line x1="3" x2="3.01" y1="12" y2="12"/>
-                        <line x1="3" x2="3.01" y1="18" y2="18"/>
-                      </svg>
-                    </span>
-                    <h3>5 Marketplace Bullets</h3>
-                    <span class="badge-sub">High Conversion</span>
+              <!-- Section 2: Bullets -->
+              <article class="doc-section doc-section--bullets">
+                <header class="doc-section-header">
+                  <div class="section-title-wrap">
+                    <span class="section-eyebrow">Key Conversion Points</span>
+                    <span class="section-meta-note">5 Structured Bullets</span>
                   </div>
-                  <div class="card-header-actions">
-                    <button class="btn-copy" data-copy-target="bulletsList">Copy Bullets</button>
-                  </div>
-                </div>
-                <div class="card-body">
-                  <ul class="bullets-list" id="bulletsList"></ul>
-                </div>
-              </div>
+                  <button type="button" class="btn-copy" data-copy-target="bulletsList">
+                    <span>Copy Bullets</span>
+                  </button>
+                </header>
 
-              <!-- Section 3: Product Description -->
-              <div class="result-card">
-                <div class="card-header">
-                  <div class="card-label">
-                    <span class="section-icon" aria-hidden="true">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                        <polyline points="14 2 14 8 20 8"/>
-                        <line x1="16" x2="8" y1="13" y2="13"/>
-                        <line x1="16" x2="8" y1="17" y2="17"/>
-                        <polyline points="10 9 9 9 8 9"/>
-                      </svg>
-                    </span>
-                    <h3>Product Description</h3>
-                  </div>
-                  <div class="card-header-actions">
-                    <button class="btn-copy" data-copy-target="listingDescription">Copy</button>
-                  </div>
+                <div class="doc-bullets-body">
+                  <ul class="editorial-bullets" id="bulletsList"></ul>
                 </div>
-                <div class="card-body">
-                  <div class="description-text" id="listingDescription"></div>
+              </article>
+
+              <!-- Section 3: Description -->
+              <article class="doc-section doc-section--narrative">
+                <header class="doc-section-header">
+                  <div class="section-title-wrap">
+                    <span class="section-eyebrow">Editorial Narrative</span>
+                    <span class="section-meta-note">Product Story &amp; Details</span>
+                  </div>
+                  <button type="button" class="btn-copy" data-copy-target="listingDescription">
+                    <span>Copy</span>
+                  </button>
+                </header>
+
+                <div class="doc-narrative-body">
+                  <div class="narrative-prose" id="listingDescription"></div>
                 </div>
-              </div>
+              </article>
 
               <!-- Section 4: Backend Search Terms -->
-              <div class="result-card">
-                <div class="card-header">
-                  <div class="card-label">
-                    <span class="section-icon" aria-hidden="true">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"/>
-                        <line x1="21" x2="16.65" y1="21" y2="16.65"/>
-                      </svg>
-                    </span>
-                    <h3>Backend Search Keywords</h3>
-                    <span class="badge-sub" id="keywordCount">0 keywords</span>
+              <article class="doc-section doc-section--keywords">
+                <header class="doc-section-header">
+                  <div class="section-title-wrap">
+                    <span class="section-eyebrow">Backend Search Index</span>
+                    <span class="section-meta-note" id="keywordCount">0 keywords</span>
                   </div>
-                  <div class="card-header-actions">
-                    <button class="btn-copy" id="btnCopyKeywords">Copy Keywords</button>
-                  </div>
+                  <button type="button" class="btn-copy" id="btnCopyKeywords">
+                    <span>Copy Keywords</span>
+                  </button>
+                </header>
+
+                <div class="doc-keywords-body">
+                  <div class="editorial-tags" id="keywordsTags"></div>
                 </div>
-                <div class="card-body">
-                  <div class="keywords-tags" id="keywordsTags"></div>
-                </div>
-              </div>
+              </article>
 
             </div>
+
           </div>
         </section>
 
       </div>
     </main>
+
   </div>
 
   <!-- Accessible Toast Notification -->
