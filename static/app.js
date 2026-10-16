@@ -36,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
   setupEventListeners();
   updateMarketplaceHint();
   updateInputCounters();
+  if (window.__INITIAL_LISTING__) {
+    currentListing = window.__INITIAL_LISTING__;
+    renderListing(window.__INITIAL_LISTING__);
+  }
 });
 
 // Check Ollama Server Health

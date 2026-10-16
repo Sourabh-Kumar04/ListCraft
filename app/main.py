@@ -1,9 +1,11 @@
 """FastAPI application entrypoint for ListCraft."""
-
 import os
-from fastapi import FastAPI, HTTPException
+
+from typing import Optional
+import json
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.models import ListingRequest, ListingResponse, HealthResponse
@@ -31,6 +33,9 @@ generator = ListingGenerator(ollama_client=ollama_client)
 STATIC_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "static")
 
 
+latest_listing: Optional[ListingResponse] = None
+
+
 @app.get("/api/health", response_model=HealthResponse)
 async def health_check():
     health = await ollama_client.check_health()
@@ -53,10 +58,17 @@ async def list_marketplaces():
     }
 
 
+@app.get("/api/latest", response_model=Optional[ListingResponse])
+async def get_latest_listing():
+    return latest_listing
+
+
 @app.post("/api/generate", response_model=ListingResponse)
 async def generate_listing_endpoint(req: ListingRequest):
+    global latest_listing
     try:
         listing = await generator.generate_listing(req)
+        latest_listing = listing
         return listing
     except Exception as e:
         # Check if it was connection error
@@ -75,8 +87,14 @@ if os.path.isdir(STATIC_DIR):
 
 
 @app.get("/")
-async def serve_index():
+async def serve_index(request: Request):
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
+        if latest_listing is not None and request.query_params.get("empty") != "1":
+            with open(index_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            data_script = f"<script>window.__INITIAL_LISTING__ = {latest_listing.model_dump_json()};</script>"
+            content = content.replace("</head>", f"  {data_script}\n</head>")
+            return HTMLResponse(content)
         return FileResponse(index_path)
     return {"message": "ListCraft API is running. Static UI not found."}
