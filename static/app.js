@@ -88,6 +88,7 @@ function setupEventListeners() {
 
   document.getElementById("btnCopyKeywords").addEventListener("click", copyKeywords);
   document.getElementById("btnCopyAll").addEventListener("click", copyEntireListing);
+  document.getElementById("btnGenerateExport").addEventListener("click", (e) => handleGenerate(e, true));
   document.getElementById("btnExport").addEventListener("click", exportListing);
 }
 
@@ -111,7 +112,7 @@ function loadPreset(key, clickedBtn) {
   document.getElementById("specsInput").value = data.specs;
 }
 
-async function handleGenerate(e) {
+async function handleGenerate(e, autoExport = false) {
   e.preventDefault();
 
   const generateBtn = document.getElementById("generateBtn");
@@ -126,7 +127,7 @@ async function handleGenerate(e) {
 
   if (!product || !specs) {
     showToast("Please fill in the product name and specifications.");
-    return;
+    return null;
   }
 
   // Set loading state
@@ -149,10 +150,16 @@ async function handleGenerate(e) {
     const listing = await res.json();
     currentListing = listing;
     renderListing(listing);
-    showToast("Listing generated successfully!");
+    if (autoExport) {
+      exportListing();
+    } else {
+      showToast("Listing generated successfully!");
+    }
+    return listing;
   } catch (err) {
     console.error("Generation error:", err);
     alert(`Generation Error: ${err.message}\n\nPlease check that Ollama is running ('ollama serve') and the model is downloaded.`);
+    return null;
   } finally {
     generateBtn.disabled = false;
     btnText.textContent = "Generate Listing with Local LLM";
