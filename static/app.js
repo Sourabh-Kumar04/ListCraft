@@ -30,6 +30,25 @@ const MARKETPLACE_INFO = {
 };
 
 let currentListing = null;
+let activeStream = null;
+
+function stopCurrentStream() {
+  if (activeStream) {
+    activeStream.cancelled = true;
+    if (activeStream.timer) clearTimeout(activeStream.timer);
+    activeStream = null;
+  }
+  document.querySelectorAll(".streaming-cursor").forEach(c => c.remove());
+}
+
+function skipStream() {
+  if (currentListing) {
+    stopCurrentStream();
+    renderListingImmediate(currentListing);
+    const statusBar = document.getElementById("streamingStatusBar");
+    if (statusBar) statusBar.classList.add("hidden");
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
@@ -38,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateInputCounters();
   if (window.__INITIAL_LISTING__) {
     currentListing = window.__INITIAL_LISTING__;
-    renderListing(window.__INITIAL_LISTING__);
+    renderListing(window.__INITIAL_LISTING__, { immediate: true });
   }
 });
 
@@ -217,7 +236,7 @@ async function handleGenerate(e, autoExport = false) {
 
   // Set loading state
   if (generateBtn) generateBtn.disabled = true;
-  if (btnText) btnText.textContent = "Writing Listing with Local LLM...";
+  if (btnText) btnText.textContent = "Synthesizing Listing with Local LLM...";
   if (spinner) spinner.classList.remove("hidden");
 
   // Show loading skeleton in output canvas
@@ -228,6 +247,29 @@ async function handleGenerate(e, autoExport = false) {
   if (emptyState) emptyState.classList.add("hidden");
   if (container) container.classList.add("hidden");
   if (skeleton) skeleton.classList.remove("hidden");
+
+  // AI Thinking State Tracker
+  let thinkingInterval = null;
+  const startTime = performance.now();
+  const thinkingStatusText = document.getElementById("thinkingStatusText");
+  const thinkingTimerBadge = document.getElementById("thinkingTimerBadge");
+
+  const thinkingSteps = [
+    "Analyzing product parameters & specifications...",
+    `Applying ${marketplace.toUpperCase()} A10 algorithmic limits & character boundaries...`,
+    "Synthesizing 5 structured conversion benefit anchors...",
+    "Formulating editorial brand narrative and indexing search terms..."
+  ];
+
+  if (thinkingStatusText) thinkingStatusText.textContent = thinkingSteps[0];
+  if (thinkingTimerBadge) thinkingTimerBadge.textContent = "Thinking · 0.0s";
+
+  thinkingInterval = setInterval(() => {
+    const elapsed = ((performance.now() - startTime) / 1000).toFixed(1);
+    if (thinkingTimerBadge) thinkingTimerBadge.textContent = `Thinking · ${elapsed}s`;
+    const stepIdx = Math.min(thinkingSteps.length - 1, Math.floor((performance.now() - startTime) / 1200));
+    if (thinkingStatusText) thinkingStatusText.textContent = thinkingSteps[stepIdx];
+  }, 100);
 
   try {
     const res = await fetch("/api/generate", {
@@ -255,8 +297,9 @@ async function handleGenerate(e, autoExport = false) {
     alert(`Generation Error: ${err.message}\n\nPlease check that Ollama is running ('ollama serve') and the model is downloaded.`);
     return null;
   } finally {
+    if (thinkingInterval) clearInterval(thinkingInterval);
     if (generateBtn) generateBtn.disabled = false;
-    if (btnText) btnText.textContent = "Generate Listing with Local LLM";
+    if (btnText) btnText.textContent = "Generate Platform Listing";
     if (spinner) spinner.classList.add("hidden");
     if (skeleton) skeleton.classList.add("hidden");
     if (!currentListing) {
@@ -265,7 +308,10 @@ async function handleGenerate(e, autoExport = false) {
   }
 }
 
-function renderListing(data) {
+function renderListing(data, options = {}) {
+  stopCurrentStream();
+  currentListing = data;
+
   const skeleton = document.getElementById("loadingSkeleton");
   if (skeleton) skeleton.classList.add("hidden");
 
@@ -281,12 +327,40 @@ function renderListing(data) {
   const exportBtn = document.getElementById("btnExport");
   if (exportBtn) exportBtn.disabled = false;
 
-  // Badge
+  // Marketplace badge
   const info = MARKETPLACE_INFO[data.marketplace.toLowerCase()] || { label: `${data.marketplace} Ready`, limit: data.char_limit };
   const badge = document.getElementById("resultMarketplaceBadge");
   if (badge) {
     badge.textContent = info.label;
   }
+
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced || options.immediate) {
+    renderListingImmediate(data);
+    return;
+  }
+
+  // AI-Native Progressive Reveal
+  startStreamingReveal(data);
+}
+
+function renderListingImmediate(data) {
+  stopCurrentStream();
+  currentListing = data;
+
+  const statusBar = document.getElementById("streamingStatusBar");
+  if (statusBar) statusBar.classList.add("hidden");
+
+  const copyAllBtn = document.getElementById("btnCopyAll");
+  if (copyAllBtn) copyAllBtn.disabled = false;
+
+  const exportBtn = document.getElementById("btnExport");
+  if (exportBtn) exportBtn.disabled = false;
+
+  // Badge
+  const info = MARKETPLACE_INFO[data.marketplace.toLowerCase()] || { label: `${data.marketplace} Ready`, limit: data.char_limit };
+  const badge = document.getElementById("resultMarketplaceBadge");
+  if (badge) badge.textContent = info.label;
 
   // Title
   const titleEl = document.getElementById("listingTitle");
@@ -295,11 +369,7 @@ function renderListing(data) {
   const countEl = document.getElementById("titleCharCount");
   if (countEl) {
     countEl.textContent = `${data.char_count} / ${data.char_limit} chars`;
-    if (data.char_count <= data.char_limit) {
-      countEl.style.color = "#059669";
-    } else {
-      countEl.style.color = "#e11d48";
-    }
+    countEl.style.color = data.char_count <= data.char_limit ? "#059669" : "#e11d48";
   }
 
   // Progress Bar
@@ -383,18 +453,230 @@ function renderListing(data) {
   }
 }
 
+function startStreamingReveal(data) {
+  const streamState = { cancelled: false, timer: null };
+  activeStream = streamState;
+
+  const statusBar = document.getElementById("streamingStatusBar");
+  const streamMsg = document.getElementById("streamingMsg");
+  const btnSkip = document.getElementById("btnSkipStream");
+  if (statusBar) {
+    statusBar.classList.remove("hidden");
+    statusBar.classList.remove("fade-out");
+  }
+  if (streamMsg) streamMsg.textContent = "Streaming AI generation...";
+  if (btnSkip) {
+    btnSkip.onclick = () => skipStream();
+  }
+
+  // Reset elements
+  const titleEl = document.getElementById("listingTitle");
+  const bulletsList = document.getElementById("bulletsList");
+  const descEl = document.getElementById("listingDescription");
+  const kwContainer = document.getElementById("keywordsTags");
+  const kwCountEl = document.getElementById("keywordCount");
+  const countEl = document.getElementById("titleCharCount");
+  const progressBar = document.getElementById("titleProgressBar");
+
+  if (titleEl) titleEl.innerHTML = "";
+  if (bulletsList) bulletsList.innerHTML = "";
+  if (descEl) descEl.innerHTML = "";
+  if (kwContainer) kwContainer.innerHTML = "";
+  if (kwCountEl) kwCountEl.textContent = "0 keywords";
+  if (countEl) {
+    countEl.textContent = `0 / ${data.char_limit} chars`;
+    countEl.style.color = "#059669";
+  }
+  if (progressBar) {
+    progressBar.style.width = "0%";
+    progressBar.style.backgroundColor = "#059669";
+  }
+
+  // 1. Stream Title
+  const titleText = data.title || "";
+  let titleIdx = 0;
+  const cursor = document.createElement("span");
+  cursor.className = "streaming-cursor";
+  cursor.setAttribute("aria-hidden", "true");
+
+  function stepTitle() {
+    if (streamState.cancelled) return;
+    if (titleIdx < titleText.length) {
+      const step = Math.min(titleText.length - titleIdx, 3);
+      titleIdx += step;
+      if (titleEl) {
+        titleEl.textContent = titleText.slice(0, titleIdx);
+        titleEl.appendChild(cursor);
+      }
+      if (countEl) {
+        countEl.textContent = `${titleIdx} / ${data.char_limit} chars`;
+        countEl.style.color = titleIdx <= data.char_limit ? "#059669" : "#e11d48";
+      }
+      if (progressBar) {
+        const pct = Math.min(100, Math.round((titleIdx / data.char_limit) * 100));
+        progressBar.style.width = `${pct}%`;
+        progressBar.style.backgroundColor = titleIdx <= data.char_limit ? "#059669" : "#e11d48";
+      }
+      streamState.timer = setTimeout(stepTitle, 12);
+    } else {
+      cursor.remove();
+      streamState.timer = setTimeout(stepBullets, 60);
+    }
+  }
+
+  // 2. Stream Bullets
+  let bulletIdx = 0;
+  function stepBullets() {
+    if (streamState.cancelled) return;
+    if (bulletIdx < data.bullets.length) {
+      const bText = data.bullets[bulletIdx];
+      const li = document.createElement("li");
+      li.className = "streaming-bullet-item";
+
+      const dot = document.createElement("span");
+      dot.className = "bullet-dot";
+      dot.textContent = `${bulletIdx + 1}.`;
+
+      const content = document.createElement("span");
+      content.className = "bullet-content";
+
+      const bCursor = document.createElement("span");
+      bCursor.className = "streaming-cursor";
+      bCursor.setAttribute("aria-hidden", "true");
+
+      li.appendChild(dot);
+      li.appendChild(content);
+      if (bulletsList) bulletsList.appendChild(li);
+
+      let charIdx = 0;
+      function streamSingleBullet() {
+        if (streamState.cancelled) return;
+        if (charIdx < bText.length) {
+          const step = Math.min(bText.length - charIdx, 4);
+          charIdx += step;
+          const currentSub = bText.slice(0, charIdx);
+
+          const colonIdx = currentSub.indexOf(":");
+          if (currentSub.startsWith("[") && currentSub.includes("]")) {
+            const endBracket = currentSub.indexOf("]");
+            const header = currentSub.substring(0, endBracket + 1);
+            const rest = currentSub.substring(endBracket + 1).replace(/^[\s:]+/, "");
+            content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong> ${escapeHtml(rest)}`;
+          } else if (colonIdx > 0 && colonIdx < 40) {
+            const header = currentSub.substring(0, colonIdx);
+            const rest = currentSub.substring(colonIdx + 1).trim();
+            content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}:</strong> ${escapeHtml(rest)}`;
+          } else {
+            content.textContent = currentSub;
+          }
+          content.appendChild(bCursor);
+          streamState.timer = setTimeout(streamSingleBullet, 12);
+        } else {
+          bCursor.remove();
+          const currentBulletIndex = bulletIdx;
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "bullet-copy-mini";
+          copyBtn.title = "Copy this bullet";
+          copyBtn.setAttribute("aria-label", `Copy bullet ${currentBulletIndex + 1}`);
+          copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+          copyBtn.addEventListener("click", () => {
+            navigator.clipboard.writeText(bText);
+            showToast(`Copied bullet #${currentBulletIndex + 1}`);
+          });
+          li.appendChild(copyBtn);
+
+          bulletIdx++;
+          streamState.timer = setTimeout(stepBullets, 30);
+        }
+      }
+      streamSingleBullet();
+    } else {
+      streamState.timer = setTimeout(stepDescription, 60);
+    }
+  }
+
+  // 3. Stream Description
+  function stepDescription() {
+    if (streamState.cancelled) return;
+    const descText = data.description || "";
+    let descIdx = 0;
+    const dCursor = document.createElement("span");
+    dCursor.className = "streaming-cursor";
+    dCursor.setAttribute("aria-hidden", "true");
+
+    function streamDesc() {
+      if (streamState.cancelled) return;
+      if (descIdx < descText.length) {
+        const step = Math.min(descText.length - descIdx, 6);
+        descIdx += step;
+        if (descEl) {
+          descEl.textContent = descText.slice(0, descIdx);
+          descEl.appendChild(dCursor);
+        }
+        streamState.timer = setTimeout(streamDesc, 12);
+      } else {
+        dCursor.remove();
+        streamState.timer = setTimeout(stepKeywords, 40);
+      }
+    }
+    streamDesc();
+  }
+
+  // 4. Reveal Keywords
+  function stepKeywords() {
+    if (streamState.cancelled) return;
+    if (kwCountEl) kwCountEl.textContent = `${data.keywords.length} keywords`;
+    if (kwContainer) {
+      kwContainer.innerHTML = "";
+      data.keywords.forEach((kw, i) => {
+        const span = document.createElement("span");
+        span.className = "keyword-tag keyword-pop-in";
+        span.style.animationDelay = `${i * 30}ms`;
+        span.textContent = kw;
+        span.title = "Click to copy keyword";
+        span.addEventListener("click", () => {
+          navigator.clipboard.writeText(kw);
+          showToast(`Copied "${kw}"`);
+        });
+        kwContainer.appendChild(span);
+      });
+    }
+
+    if (streamMsg) streamMsg.textContent = "✓ Synthesis Complete";
+    if (statusBar) {
+      setTimeout(() => {
+        if (!streamState.cancelled) {
+          statusBar.classList.add("fade-out");
+          setTimeout(() => statusBar.classList.add("hidden"), 300);
+        }
+      }, 1600);
+    }
+    activeStream = null;
+  }
+
+  // Start stream
+  stepTitle();
+}
+
 function copyElementText(id) {
   let text = "";
-  if (id === "bulletsList") {
-    if (!currentListing || !currentListing.bullets) return;
-    text = currentListing.bullets.map(b => `• ${b}`).join("\n");
+  if (!currentListing) {
+    const el = document.getElementById(id);
+    if (el) text = el.innerText || el.textContent;
+  } else if (id === "listingTitle") {
+    text = currentListing.title || "";
+  } else if (id === "bulletsList") {
+    text = currentListing.bullets ? currentListing.bullets.map(b => `• ${b}`).join("\n") : "";
+  } else if (id === "listingDescription") {
+    text = currentListing.description || "";
   } else {
     const el = document.getElementById(id);
-    if (!el) return;
-    text = el.innerText || el.textContent;
+    if (el) text = el.innerText || el.textContent;
   }
-  navigator.clipboard.writeText(text);
-  showToast("Copied to clipboard!");
+  if (text) {
+    navigator.clipboard.writeText(text);
+    showToast("Copied to clipboard!");
+  }
 }
 
 function copyKeywords() {
