@@ -6,7 +6,7 @@
   <title>ListCraft | Open-Model E-Commerce Listing Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -15,9 +15,18 @@
     <!-- Top Navigation Bar -->
     <header class="top-navbar">
       <div class="brand">
-        <div class="logo-icon">🛍️</div>
+        <div class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+            <path d="M3 6h18"/>
+            <path d="M16 10a4 4 0 0 1-8 0"/>
+          </svg>
+        </div>
         <div class="brand-text">
-          <h1>ListCraft <span class="badge-saas">Local AI</span></h1>
+          <div class="brand-heading-row">
+            <h1>ListCraft</h1>
+            <span class="badge-saas">Local AI</span>
+          </div>
           <span class="tagline">Open-Model E-Commerce Listing Generator</span>
         </div>
       </div>
@@ -37,21 +46,21 @@
     <div class="telemetry-strip">
       <div class="telemetry-group">
         <div class="telemetry-item">
-          <span class="accent">●</span>
+          <span class="status-dot-mini"></span>
           <span>Local Engine Active</span>
         </div>
-        <span class="sep">/</span>
+        <span class="sep">•</span>
         <div class="telemetry-item">
-          <span>Context: 8,192 tok</span>
+          <span>Context: <strong>8,192 tok</strong></span>
         </div>
-        <span class="sep">/</span>
+        <span class="sep">•</span>
         <div class="telemetry-item">
           <span>Zero Cloud Fees</span>
         </div>
       </div>
       <div class="telemetry-group">
         <div class="telemetry-item">
-          <span>Inference: <span class="accent">100% On-Device</span></span>
+          <span>Inference: <strong class="accent-text">100% On-Device</strong></span>
         </div>
       </div>
     </div>
@@ -76,28 +85,48 @@
         <form id="listingForm" class="product-form">
           <!-- Target Marketplace Section -->
           <div class="form-group">
-            <label for="marketplaceSelect">
-              <span>Target Marketplace</span>
+            <div class="label-row">
+              <label for="marketplaceSelect">Target Marketplace</label>
               <span class="field-hint" id="marketplaceHint">Title limit: 200 chars</span>
-            </label>
+            </div>
             <div class="marketplace-container">
               <!-- Visual Marketplace Cards Grid -->
               <div class="marketplace-pills" id="marketplacePills">
                 <div class="marketplace-pill active" data-market="amazon">
+                  <div class="pill-badge-check">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
                   <span class="pill-name">Amazon</span>
-                  <span class="pill-limit">200 Chars</span>
+                  <span class="pill-limit">200 chars limit</span>
                 </div>
                 <div class="marketplace-pill" data-market="flipkart">
+                  <div class="pill-badge-check">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
                   <span class="pill-name">Flipkart</span>
-                  <span class="pill-limit">200 Chars</span>
+                  <span class="pill-limit">200 chars limit</span>
                 </div>
                 <div class="marketplace-pill" data-market="etsy">
+                  <div class="pill-badge-check">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
                   <span class="pill-name">Etsy</span>
-                  <span class="pill-limit">140 Chars</span>
+                  <span class="pill-limit">140 chars limit</span>
                 </div>
                 <div class="marketplace-pill" data-market="shopify">
+                  <div class="pill-badge-check">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                      <polyline points="20 6 9 17 4 12"/>
+                    </svg>
+                  </div>
                   <span class="pill-name">Shopify</span>
-                  <span class="pill-limit">Flexible</span>
+                  <span class="pill-limit">Flexible format</span>
                 </div>
               </div>
               <!-- Underlying Select Element for form & script compatibility -->
@@ -114,10 +143,10 @@
 
           <!-- Product Name Input -->
           <div class="form-group">
-            <label for="productName">
-              <span>Product Name / Concept <span class="required">*</span></span>
+            <div class="label-row">
+              <label for="productName">Product Name / Concept <span class="required">*</span></label>
               <span class="field-hint" id="productNameCount">0 chars</span>
-            </label>
+            </div>
             <input 
               type="text" 
               id="productName" 
@@ -154,9 +183,10 @@
 
           <!-- Raw Features & Specs -->
           <div class="form-group">
-            <label for="specsInput">
-              <span>Raw Features &amp; Specifications <span class="required">*</span></span>
-            </label>
+            <div class="label-row">
+              <label for="specsInput">Raw Features &amp; Specifications <span class="required">*</span></label>
+              <span class="field-hint" id="specsCharCount">0 chars</span>
+            </div>
             <textarea 
               id="specsInput" 
               name="specs" 
@@ -165,27 +195,34 @@
               required
             >1L capacity (32 oz), double-wall vacuum insulated, 18/8 food-grade stainless steel, matte black powder-coat finish, keeps cold for 24 hours, hot for 12 hours, leak-proof chug cap with carry handle, BPA-free, sweat-proof exterior, fits standard car cup holders.</textarea>
             <div class="textarea-footer">
-              <span>Markdown bullets, technical attributes, or raw text</span>
-              <span id="specsCharCount">0 chars</span>
+              <span>Supports technical attributes, bullet points, or raw unformatted text</span>
             </div>
           </div>
 
           <!-- Generation Buttons -->
-          <button type="submit" class="submit-btn" id="generateBtn">
-            <span class="btn-text">Generate Listing with Local LLM</span>
-            <span class="btn-spinner hidden"></span>
-          </button>
-          <button type="button" class="submit-btn" id="btnGenerateExport">
-            <span class="btn-text">⚡ Generate &amp; Export in One Click</span>
-          </button>
+          <div class="form-actions">
+            <button type="submit" class="submit-btn" id="generateBtn">
+              <span class="btn-text">Generate Listing with Local LLM</span>
+              <span class="btn-spinner hidden"></span>
+            </button>
+            <button type="button" class="btn-oneclick" id="btnGenerateExport">
+              <span class="btn-icon">⚡</span>
+              <span class="btn-text">Generate &amp; Export in One Click</span>
+            </button>
+          </div>
         </form>
 
         <!-- Privacy & Local Guarantee -->
         <div class="privacy-note">
-          <span class="lock-icon">🔒</span>
-          <div>
-            <strong>100% Private &amp; Open-Source:</strong>
-            Generations run strictly on your local open-weight model. Zero telemetry, no external cloud API requests, and confidential product specs never leave your machine.
+          <div class="privacy-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div class="privacy-content">
+            <strong>100% Private &amp; Open-Source</strong>
+            <p>Generations execute strictly on your local Ollama runtime. Confidential product specifications never leave your machine.</p>
           </div>
         </div>
       </section>
@@ -199,19 +236,41 @@
           </div>
           <div class="output-actions">
             <button type="button" class="btn-secondary" id="btnCopyAll" disabled>
-              <span>📋 Copy Complete Listing</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+              </svg>
+              <span>Copy Complete Listing</span>
             </button>
             <button type="button" class="btn-secondary" id="btnExport" disabled>
-              <span>⬇ Export .md</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" x2="12" y1="15" y2="3"/>
+              </svg>
+              <span>Export .md</span>
             </button>
           </div>
         </div>
 
         <!-- Empty Placeholder State -->
         <div class="empty-state" id="emptyState">
-          <div class="empty-icon">✨</div>
+          <div class="empty-icon-box">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+              <path d="M5 3v4"/>
+              <path d="M19 17v4"/>
+              <path d="M3 5h4"/>
+              <path d="M17 19h4"/>
+            </svg>
+          </div>
           <h3>Ready to craft your listing</h3>
           <p>Fill in product details or select a preset on the left, then click <strong>Generate Listing</strong> to create an optimized title, 5 bullet points, description, and keywords.</p>
+          <div class="empty-features-hint">
+            <span class="hint-tag">Optimized Title Limits</span>
+            <span class="hint-tag">5 High-Conversion Bullets</span>
+            <span class="hint-tag">SEO Keywords</span>
+          </div>
         </div>
 
         <!-- Results Display Container -->
@@ -220,7 +279,12 @@
           <div class="result-card">
             <div class="card-header">
               <div class="card-label">
-                <span class="section-icon">🏷️</span>
+                <span class="section-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/>
+                    <path d="M7 7h.01"/>
+                  </svg>
+                </span>
                 <h3>Optimized Title</h3>
                 <span class="char-count-pill" id="titleCharCount">0 / 200 chars</span>
               </div>
@@ -241,7 +305,16 @@
           <div class="result-card">
             <div class="card-header">
               <div class="card-label">
-                <span class="section-icon">⚡</span>
+                <span class="section-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="8" x2="21" y1="6" y2="6"/>
+                    <line x1="8" x2="21" y1="12" y2="12"/>
+                    <line x1="8" x2="21" y1="18" y2="18"/>
+                    <line x1="3" x2="3.01" y1="6" y2="6"/>
+                    <line x1="3" x2="3.01" y1="12" y2="12"/>
+                    <line x1="3" x2="3.01" y1="18" y2="18"/>
+                  </svg>
+                </span>
                 <h3>5 Marketplace Bullets</h3>
                 <span class="badge-sub">High Conversion</span>
               </div>
@@ -258,7 +331,15 @@
           <div class="result-card">
             <div class="card-header">
               <div class="card-label">
-                <span class="section-icon">📝</span>
+                <span class="section-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" x2="8" y1="13" y2="13"/>
+                    <line x1="16" x2="8" y1="17" y2="17"/>
+                    <polyline points="10 9 9 9 8 9"/>
+                  </svg>
+                </span>
                 <h3>Product Description</h3>
               </div>
               <div class="card-header-actions">
@@ -274,7 +355,12 @@
           <div class="result-card">
             <div class="card-header">
               <div class="card-label">
-                <span class="section-icon">🔍</span>
+                <span class="section-icon">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <line x1="21" x2="16.65" y1="21" y2="16.65"/>
+                  </svg>
+                </span>
                 <h3>Backend Search Keywords</h3>
                 <span class="badge-sub" id="keywordCount">0 keywords</span>
               </div>
