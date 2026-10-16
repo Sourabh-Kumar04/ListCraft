@@ -1,4 +1,5 @@
 // ListCraft Frontend Logic
+// Obsidian Synth SaaS Redesign
 
 const PRESETS = {
   bottle: {
@@ -34,6 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
   setupEventListeners();
   updateMarketplaceHint();
+  updateInputCounters();
 });
 
 // Check Ollama Server Health
@@ -49,7 +51,9 @@ async function checkHealth() {
       if (data.ollama_connected) {
         dot.className = "status-dot online";
         text.textContent = "Ollama Active";
-        modelText.textContent = data.model;
+        if (data.model) {
+          modelText.textContent = data.model;
+        }
       } else {
         dot.className = "status-dot offline";
         text.textContent = "Ollama Disconnected";
@@ -66,15 +70,47 @@ async function checkHealth() {
 
 function setupEventListeners() {
   // Preset buttons
-  document.getElementById("btnSampleBottle").addEventListener("click", (e) => loadPreset("bottle", e.target));
-  document.getElementById("btnSampleWallet").addEventListener("click", (e) => loadPreset("wallet", e.target));
-  document.getElementById("btnSampleDesk").addEventListener("click", (e) => loadPreset("desk", e.target));
+  const btnBottle = document.getElementById("btnSampleBottle");
+  const btnWallet = document.getElementById("btnSampleWallet");
+  const btnDesk = document.getElementById("btnSampleDesk");
+
+  if (btnBottle) btnBottle.addEventListener("click", (e) => loadPreset("bottle", e.target));
+  if (btnWallet) btnWallet.addEventListener("click", (e) => loadPreset("wallet", e.target));
+  if (btnDesk) btnDesk.addEventListener("click", (e) => loadPreset("desk", e.target));
 
   // Marketplace selection change
-  document.getElementById("marketplaceSelect").addEventListener("change", updateMarketplaceHint);
+  const select = document.getElementById("marketplaceSelect");
+  if (select) {
+    select.addEventListener("change", updateMarketplaceHint);
+  }
+
+  // Interactive marketplace pills
+  document.querySelectorAll(".marketplace-pill").forEach(pill => {
+    pill.addEventListener("click", () => {
+      const market = pill.getAttribute("data-market");
+      if (select && market) {
+        select.value = market;
+        select.dispatchEvent(new Event("change"));
+      }
+    });
+  });
+
+  // Real-time character counters
+  const prodInput = document.getElementById("productName");
+  if (prodInput) {
+    prodInput.addEventListener("input", updateInputCounters);
+  }
+
+  const specsTextarea = document.getElementById("specsInput");
+  if (specsTextarea) {
+    specsTextarea.addEventListener("input", updateInputCounters);
+  }
 
   // Form submit
-  document.getElementById("listingForm").addEventListener("submit", handleGenerate);
+  const form = document.getElementById("listingForm");
+  if (form) {
+    form.addEventListener("submit", handleGenerate);
+  }
 
   // Copy Buttons
   document.querySelectorAll(".btn-copy").forEach(btn => {
@@ -86,17 +122,51 @@ function setupEventListeners() {
     });
   });
 
-  document.getElementById("btnCopyKeywords").addEventListener("click", copyKeywords);
-  document.getElementById("btnCopyAll").addEventListener("click", copyEntireListing);
-  document.getElementById("btnGenerateExport").addEventListener("click", (e) => handleGenerate(e, true));
-  document.getElementById("btnExport").addEventListener("click", exportListing);
+  const btnCopyKws = document.getElementById("btnCopyKeywords");
+  if (btnCopyKws) btnCopyKws.addEventListener("click", copyKeywords);
+
+  const btnCopyAll = document.getElementById("btnCopyAll");
+  if (btnCopyAll) btnCopyAll.addEventListener("click", copyEntireListing);
+
+  const btnGenExport = document.getElementById("btnGenerateExport");
+  if (btnGenExport) btnGenExport.addEventListener("click", (e) => handleGenerate(e, true));
+
+  const btnExp = document.getElementById("btnExport");
+  if (btnExp) btnExp.addEventListener("click", exportListing);
+}
+
+function updateInputCounters() {
+  const prod = document.getElementById("productName");
+  const prodCounter = document.getElementById("productNameCount");
+  if (prod && prodCounter) {
+    prodCounter.textContent = `${prod.value.length} chars`;
+  }
+
+  const specs = document.getElementById("specsInput");
+  const specsCounter = document.getElementById("specsCharCount");
+  if (specs && specsCounter) {
+    specsCounter.textContent = `${specs.value.length} chars`;
+  }
 }
 
 function updateMarketplaceHint() {
   const select = document.getElementById("marketplaceSelect");
+  if (!select) return;
+
   const hint = document.getElementById("marketplaceHint");
   const info = MARKETPLACE_INFO[select.value] || MARKETPLACE_INFO.amazon;
-  hint.textContent = info.hint;
+  if (hint) {
+    hint.textContent = info.hint;
+  }
+
+  // Sync interactive marketplace pills
+  document.querySelectorAll(".marketplace-pill").forEach(pill => {
+    if (pill.getAttribute("data-market") === select.value) {
+      pill.classList.add("active");
+    } else {
+      pill.classList.remove("active");
+    }
+  });
 }
 
 function loadPreset(key, clickedBtn) {
@@ -110,10 +180,12 @@ function loadPreset(key, clickedBtn) {
   document.getElementById("categoryInput").value = data.category;
   document.getElementById("priceInput").value = data.price;
   document.getElementById("specsInput").value = data.specs;
+
+  updateInputCounters();
 }
 
 async function handleGenerate(e, autoExport = false) {
-  e.preventDefault();
+  if (e) e.preventDefault();
 
   const generateBtn = document.getElementById("generateBtn");
   const btnText = generateBtn.querySelector(".btn-text");
@@ -132,8 +204,8 @@ async function handleGenerate(e, autoExport = false) {
 
   // Set loading state
   generateBtn.disabled = true;
-  btnText.textContent = "Writing Listing with Open LLM...";
-  spinner.classList.remove("hidden");
+  btnText.textContent = "Writing Listing with Local LLM...";
+  if (spinner) spinner.classList.remove("hidden");
 
   try {
     const res = await fetch("/api/generate", {
@@ -163,98 +235,122 @@ async function handleGenerate(e, autoExport = false) {
   } finally {
     generateBtn.disabled = false;
     btnText.textContent = "Generate Listing with Local LLM";
-    spinner.classList.add("hidden");
+    if (spinner) spinner.classList.add("hidden");
   }
 }
 
 function renderListing(data) {
-  document.getElementById("emptyState").classList.add("hidden");
+  const emptyState = document.getElementById("emptyState");
+  if (emptyState) emptyState.classList.add("hidden");
+
   const container = document.getElementById("resultsContainer");
-  container.classList.remove("hidden");
+  if (container) container.classList.remove("hidden");
 
   const copyAllBtn = document.getElementById("btnCopyAll");
-  copyAllBtn.disabled = false;
-  document.getElementById("btnExport").disabled = false;
+  if (copyAllBtn) copyAllBtn.disabled = false;
+
+  const exportBtn = document.getElementById("btnExport");
+  if (exportBtn) exportBtn.disabled = false;
 
   // Badge
   const info = MARKETPLACE_INFO[data.marketplace.toLowerCase()] || { label: `${data.marketplace} Ready`, limit: data.char_limit };
   const badge = document.getElementById("resultMarketplaceBadge");
-  badge.textContent = info.label;
+  if (badge) {
+    badge.textContent = info.label;
+  }
 
   // Title
   const titleEl = document.getElementById("listingTitle");
-  titleEl.textContent = data.title;
+  if (titleEl) titleEl.textContent = data.title;
+
   const countEl = document.getElementById("titleCharCount");
-  countEl.textContent = `${data.char_count} / ${data.char_limit} chars`;
-  if (data.char_count <= data.char_limit) {
-    countEl.style.color = "#047857";
-  } else {
-    countEl.style.color = "#b91c1c";
+  if (countEl) {
+    countEl.textContent = `${data.char_count} / ${data.char_limit} chars`;
+    if (data.char_count <= data.char_limit) {
+      countEl.style.color = "#10b981";
+    } else {
+      countEl.style.color = "#f43f5e";
+    }
+  }
+
+  // Progress Bar
+  const progressBar = document.getElementById("titleProgressBar");
+  if (progressBar) {
+    const pct = Math.min(100, Math.round((data.char_count / data.char_limit) * 100));
+    progressBar.style.width = `${pct}%`;
+    progressBar.style.backgroundColor = data.char_count <= data.char_limit ? "#10b981" : "#f43f5e";
   }
 
   // Bullets
   const bulletsList = document.getElementById("bulletsList");
-  bulletsList.innerHTML = "";
-  data.bullets.forEach((bullet, idx) => {
-    const li = document.createElement("li");
+  if (bulletsList) {
+    bulletsList.innerHTML = "";
+    data.bullets.forEach((bullet, idx) => {
+      const li = document.createElement("li");
 
-    const dot = document.createElement("span");
-    dot.className = "bullet-dot";
-    dot.textContent = "•";
+      const dot = document.createElement("span");
+      dot.className = "bullet-dot";
+      dot.textContent = `${idx + 1}.`;
 
-    const content = document.createElement("span");
-    content.className = "bullet-content";
+      const content = document.createElement("span");
+      content.className = "bullet-content";
 
-    // Split bold title if brackets or colon present
-    const colonIdx = bullet.indexOf(":");
-    if (bullet.startsWith("[") && bullet.includes("]")) {
-      const endBracket = bullet.indexOf("]");
-      const header = bullet.substring(0, endBracket + 1);
-      const rest = bullet.substring(endBracket + 1);
-      content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong>${escapeHtml(rest)}`;
-    } else if (colonIdx > 0 && colonIdx < 35) {
-      const header = bullet.substring(0, colonIdx + 1);
-      const rest = bullet.substring(colonIdx + 1);
-      content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong>${escapeHtml(rest)}`;
-    } else {
-      content.textContent = bullet;
-    }
+      // Split bold title if brackets or colon present
+      const colonIdx = bullet.indexOf(":");
+      if (bullet.startsWith("[") && bullet.includes("]")) {
+        const endBracket = bullet.indexOf("]");
+        const header = bullet.substring(0, endBracket + 1);
+        const rest = bullet.substring(endBracket + 1);
+        content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong>${escapeHtml(rest)}`;
+      } else if (colonIdx > 0 && colonIdx < 40) {
+        const header = bullet.substring(0, colonIdx + 1);
+        const rest = bullet.substring(colonIdx + 1);
+        content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong>${escapeHtml(rest)}`;
+      } else {
+        content.textContent = bullet;
+      }
 
-    const copyBtn = document.createElement("button");
-    copyBtn.className = "bullet-copy-mini";
-    copyBtn.title = "Copy this bullet";
-    copyBtn.textContent = "📋";
-    copyBtn.addEventListener("click", () => {
-      navigator.clipboard.writeText(bullet);
-      showToast(`Copied bullet #${idx + 1}`);
+      const copyBtn = document.createElement("button");
+      copyBtn.className = "bullet-copy-mini";
+      copyBtn.title = "Copy this bullet";
+      copyBtn.textContent = "📋";
+      copyBtn.addEventListener("click", () => {
+        navigator.clipboard.writeText(bullet);
+        showToast(`Copied bullet #${idx + 1}`);
+      });
+
+      li.appendChild(dot);
+      li.appendChild(content);
+      li.appendChild(copyBtn);
+      bulletsList.appendChild(li);
     });
-
-    li.appendChild(dot);
-    li.appendChild(content);
-    li.appendChild(copyBtn);
-    bulletsList.appendChild(li);
-  });
+  }
 
   // Description
   const descEl = document.getElementById("listingDescription");
-  descEl.textContent = data.description;
+  if (descEl) descEl.textContent = data.description;
 
   // Keywords
   const kwContainer = document.getElementById("keywordsTags");
-  kwContainer.innerHTML = "";
-  document.getElementById("keywordCount").textContent = `${data.keywords.length} keywords`;
+  if (kwContainer) {
+    kwContainer.innerHTML = "";
+    const kwCountEl = document.getElementById("keywordCount");
+    if (kwCountEl) {
+      kwCountEl.textContent = `${data.keywords.length} keywords`;
+    }
 
-  data.keywords.forEach(kw => {
-    const span = document.createElement("span");
-    span.className = "keyword-tag";
-    span.textContent = kw;
-    span.title = "Click to copy keyword";
-    span.addEventListener("click", () => {
-      navigator.clipboard.writeText(kw);
-      showToast(`Copied "${kw}"`);
+    data.keywords.forEach(kw => {
+      const span = document.createElement("span");
+      span.className = "keyword-tag";
+      span.textContent = kw;
+      span.title = "Click to copy keyword";
+      span.addEventListener("click", () => {
+        navigator.clipboard.writeText(kw);
+        showToast(`Copied "${kw}"`);
+      });
+      kwContainer.appendChild(span);
     });
-    kwContainer.appendChild(span);
-  });
+  }
 }
 
 function copyElementText(id) {
@@ -329,6 +425,7 @@ function exportListing() {
 
 function showToast(msg) {
   const toast = document.getElementById("toast");
+  if (!toast) return;
   toast.textContent = msg;
   toast.classList.remove("hidden");
   setTimeout(() => {

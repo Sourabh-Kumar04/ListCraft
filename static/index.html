@@ -6,7 +6,7 @@
   <title>ListCraft | Open-Model E-Commerce Listing Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -17,7 +17,7 @@
       <div class="brand">
         <div class="logo-icon">🛍️</div>
         <div class="brand-text">
-          <h1>ListCraft</h1>
+          <h1>ListCraft <span class="badge-saas">Local AI</span></h1>
           <span class="tagline">Open-Model E-Commerce Listing Generator</span>
         </div>
       </div>
@@ -33,12 +33,38 @@
       </div>
     </header>
 
+    <!-- Telemetry & System Status Strip -->
+    <div class="telemetry-strip">
+      <div class="telemetry-group">
+        <div class="telemetry-item">
+          <span class="accent">●</span>
+          <span>Local Engine Active</span>
+        </div>
+        <span class="sep">/</span>
+        <div class="telemetry-item">
+          <span>Context: 8,192 tok</span>
+        </div>
+        <span class="sep">/</span>
+        <div class="telemetry-item">
+          <span>Zero Cloud Fees</span>
+        </div>
+      </div>
+      <div class="telemetry-group">
+        <div class="telemetry-item">
+          <span>Inference: <span class="accent">100% On-Device</span></span>
+        </div>
+      </div>
+    </div>
+
     <!-- Main Workspace -->
     <main class="main-content">
       <!-- Left Column: Input Form -->
       <section class="panel input-panel">
         <div class="panel-header">
-          <h2>Product Specifications</h2>
+          <div class="panel-header-left">
+            <h2>Product Specifications</h2>
+            <span class="panel-subtitle">Enter details or select a catalog sample</span>
+          </div>
           <div class="quick-samples">
             <span class="samples-label">Preset:</span>
             <button type="button" class="sample-btn active" id="btnSampleBottle">Water Bottle</button>
@@ -48,23 +74,50 @@
         </div>
 
         <form id="listingForm" class="product-form">
+          <!-- Target Marketplace Section -->
           <div class="form-group">
             <label for="marketplaceSelect">
               <span>Target Marketplace</span>
               <span class="field-hint" id="marketplaceHint">Title limit: 200 chars</span>
             </label>
-            <div class="select-wrapper">
-              <select id="marketplaceSelect" name="marketplace" required>
-                <option value="amazon" selected>Amazon (Factual, 5 Structured Bullets, 200 Char Limit)</option>
-                <option value="flipkart">Flipkart (Value-Driven, Spec-Focused, 200 Char Limit)</option>
-                <option value="etsy">Etsy (Handmade / Story, Aesthetic, 140 Char Limit)</option>
-                <option value="shopify">Shopify (D2C Brand Pitch, Conversational, Flexible)</option>
-              </select>
+            <div class="marketplace-container">
+              <!-- Visual Marketplace Cards Grid -->
+              <div class="marketplace-pills" id="marketplacePills">
+                <div class="marketplace-pill active" data-market="amazon">
+                  <span class="pill-name">Amazon</span>
+                  <span class="pill-limit">200 Chars</span>
+                </div>
+                <div class="marketplace-pill" data-market="flipkart">
+                  <span class="pill-name">Flipkart</span>
+                  <span class="pill-limit">200 Chars</span>
+                </div>
+                <div class="marketplace-pill" data-market="etsy">
+                  <span class="pill-name">Etsy</span>
+                  <span class="pill-limit">140 Chars</span>
+                </div>
+                <div class="marketplace-pill" data-market="shopify">
+                  <span class="pill-name">Shopify</span>
+                  <span class="pill-limit">Flexible</span>
+                </div>
+              </div>
+              <!-- Underlying Select Element for form & script compatibility -->
+              <div class="select-wrapper">
+                <select id="marketplaceSelect" name="marketplace" required>
+                  <option value="amazon" selected>Amazon (Factual, 5 Structured Bullets, 200 Char Limit)</option>
+                  <option value="flipkart">Flipkart (Value-Driven, Spec-Focused, 200 Char Limit)</option>
+                  <option value="etsy">Etsy (Handmade / Story, Aesthetic, 140 Char Limit)</option>
+                  <option value="shopify">Shopify (D2C Brand Pitch, Conversational, Flexible)</option>
+                </select>
+              </div>
             </div>
           </div>
 
+          <!-- Product Name Input -->
           <div class="form-group">
-            <label for="productName">Product Name / Concept <span class="required">*</span></label>
+            <label for="productName">
+              <span>Product Name / Concept <span class="required">*</span></span>
+              <span class="field-hint" id="productNameCount">0 chars</span>
+            </label>
             <input 
               type="text" 
               id="productName" 
@@ -75,6 +128,7 @@
             >
           </div>
 
+          <!-- Category & Price Row -->
           <div class="form-row">
             <div class="form-group">
               <label for="categoryInput">Category</label>
@@ -82,7 +136,7 @@
                 type="text" 
                 id="categoryInput" 
                 name="category" 
-                placeholder="e.g. Home & Kitchen > Drinkware" 
+                placeholder="e.g. Sports & Outdoors > Drinkware" 
                 value="Sports & Outdoors / Drinkware"
               >
             </div>
@@ -98,8 +152,11 @@
             </div>
           </div>
 
+          <!-- Raw Features & Specs -->
           <div class="form-group">
-            <label for="specsInput">Raw Features & Specifications <span class="required">*</span></label>
+            <label for="specsInput">
+              <span>Raw Features &amp; Specifications <span class="required">*</span></span>
+            </label>
             <textarea 
               id="specsInput" 
               name="specs" 
@@ -107,20 +164,29 @@
               placeholder="Paste raw bullet points, specs, materials, dimensions, certifications..." 
               required
             >1L capacity (32 oz), double-wall vacuum insulated, 18/8 food-grade stainless steel, matte black powder-coat finish, keeps cold for 24 hours, hot for 12 hours, leak-proof chug cap with carry handle, BPA-free, sweat-proof exterior, fits standard car cup holders.</textarea>
+            <div class="textarea-footer">
+              <span>Markdown bullets, technical attributes, or raw text</span>
+              <span id="specsCharCount">0 chars</span>
+            </div>
           </div>
 
+          <!-- Generation Buttons -->
           <button type="submit" class="submit-btn" id="generateBtn">
             <span class="btn-text">Generate Listing with Local LLM</span>
             <span class="btn-spinner hidden"></span>
           </button>
-          <button type="button" class="submit-btn" id="btnGenerateExport" style="margin-top: 10px; background: linear-gradient(135deg, #f59e0b, #ef4444);">
+          <button type="button" class="submit-btn" id="btnGenerateExport">
             <span class="btn-text">⚡ Generate &amp; Export in One Click</span>
           </button>
         </form>
 
+        <!-- Privacy & Local Guarantee -->
         <div class="privacy-note">
           <span class="lock-icon">🔒</span>
-          <span>100% Private & Open-Source. Generations run strictly on your local open-weight model with zero external API calls.</span>
+          <div>
+            <strong>100% Private &amp; Open-Source:</strong>
+            Generations run strictly on your local open-weight model. Zero telemetry, no external cloud API requests, and confidential product specs never leave your machine.
+          </div>
         </div>
       </section>
 
@@ -131,19 +197,21 @@
             <h2>Marketplace Listing</h2>
             <span class="badge-pill" id="resultMarketplaceBadge">Amazon Ready</span>
           </div>
-          <button type="button" class="btn-secondary" id="btnCopyAll" disabled>
-            <span>📋 Copy Complete Listing</span>
-          </button>
-          <button type="button" class="btn-secondary" id="btnExport" disabled>
-            <span>⬇ Export .md</span>
-          </button>
+          <div class="output-actions">
+            <button type="button" class="btn-secondary" id="btnCopyAll" disabled>
+              <span>📋 Copy Complete Listing</span>
+            </button>
+            <button type="button" class="btn-secondary" id="btnExport" disabled>
+              <span>⬇ Export .md</span>
+            </button>
+          </div>
         </div>
 
         <!-- Empty Placeholder State -->
         <div class="empty-state" id="emptyState">
           <div class="empty-icon">✨</div>
           <h3>Ready to craft your listing</h3>
-          <p>Fill in product details or choose a preset on the left, then click <strong>Generate Listing</strong> to create an optimized title, 5 bullet points, description, and keywords.</p>
+          <p>Fill in product details or select a preset on the left, then click <strong>Generate Listing</strong> to create an optimized title, 5 bullet points, description, and keywords.</p>
         </div>
 
         <!-- Results Display Container -->
@@ -156,10 +224,16 @@
                 <h3>Optimized Title</h3>
                 <span class="char-count-pill" id="titleCharCount">0 / 200 chars</span>
               </div>
-              <button class="btn-copy" data-copy-target="listingTitle">Copy</button>
+              <div class="card-header-actions">
+                <button class="btn-copy" data-copy-target="listingTitle">Copy</button>
+              </div>
             </div>
             <div class="card-body">
               <p class="title-text" id="listingTitle"></p>
+            </div>
+            <!-- Progress bar indicating character usage against marketplace limit -->
+            <div class="title-progress-track">
+              <div class="title-progress-bar" id="titleProgressBar"></div>
             </div>
           </div>
 
@@ -171,7 +245,9 @@
                 <h3>5 Marketplace Bullets</h3>
                 <span class="badge-sub">High Conversion</span>
               </div>
-              <button class="btn-copy" data-copy-target="bulletsList">Copy Bullets</button>
+              <div class="card-header-actions">
+                <button class="btn-copy" data-copy-target="bulletsList">Copy Bullets</button>
+              </div>
             </div>
             <div class="card-body">
               <ul class="bullets-list" id="bulletsList"></ul>
@@ -185,7 +261,9 @@
                 <span class="section-icon">📝</span>
                 <h3>Product Description</h3>
               </div>
-              <button class="btn-copy" data-copy-target="listingDescription">Copy</button>
+              <div class="card-header-actions">
+                <button class="btn-copy" data-copy-target="listingDescription">Copy</button>
+              </div>
             </div>
             <div class="card-body">
               <div class="description-text" id="listingDescription"></div>
@@ -200,7 +278,9 @@
                 <h3>Backend Search Keywords</h3>
                 <span class="badge-sub" id="keywordCount">0 keywords</span>
               </div>
-              <button class="btn-copy" id="btnCopyKeywords">Copy Keywords</button>
+              <div class="card-header-actions">
+                <button class="btn-copy" id="btnCopyKeywords">Copy Keywords</button>
+              </div>
             </div>
             <div class="card-body">
               <div class="keywords-tags" id="keywordsTags"></div>
