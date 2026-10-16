@@ -1,4 +1,4 @@
-// ListingWriter Frontend Logic
+// ListCraft Frontend Logic
 
 const PRESETS = {
   bottle: {

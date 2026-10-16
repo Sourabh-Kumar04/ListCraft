@@ -1,4 +1,4 @@
-"""Per-marketplace prompt templates and tone guidelines for ListingWriter."""
+"""Per-marketplace prompt templates and tone guidelines for ListCraft."""
 
 from typing import Dict, Any
 from app.config import MARKETPLACE_LIMITS
@@ -57,7 +57,7 @@ MARKETPLACE_GUIDELINES: Dict[str, Dict[str, Any]] = {
 
 def build_system_prompt() -> str:
     return (
-        "You are ListingWriter, an elite e-commerce listing copywriter and SEO specialist. "
+        "You are ListCraft, an elite e-commerce listing copywriter and SEO specialist. "
         "Your task is to take raw product specifications and produce an optimized, marketplace-compliant product listing. "
         "You must return ONLY a valid, parseable JSON object matching the requested schema. "
         "Do not include markdown code fence formatting (such as ```json) if possible, or include only clean JSON without preamble."

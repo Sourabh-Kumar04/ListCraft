@@ -1,4 +1,4 @@
-# ListingWriter 🛍️
+# ListCraft 🛍️
 
 > **Hacktoberfest Week 2 Project** — *Theme: Side Hustle*  
 > An open-weight model product listing writer for e-commerce sellers, D2C brands, and listing agencies.
@@ -12,9 +12,9 @@
 
 ## 💡 What It Does
 
-**ListingWriter** converts raw, messy product information (name, specs, dimensions, materials, price) into marketplace-ready, high-converting product listings in seconds.
+**ListCraft** converts raw, messy product information (name, specs, dimensions, materials, price) into marketplace-ready, high-converting product listings in seconds.
 
-For any input product, ListingWriter generates:
+For any input product, ListCraft generates:
 1. **SEO-Optimized Title**: Tailored to strict marketplace character limits.
 2. **Exactly 5 Bullet Points**: Highlighting features, customer benefits, and technical specifications.
 3. **Full Product Description**: Formatted copy with appropriate tone and emotional hooks.
@@ -37,7 +37,7 @@ Creating high-ranking e-commerce listings is tedious, repetitive, and expensive.
 
 1. **Marketplace Sellers (Amazon FBA, Flipkart, Etsy shops)**:
    - *Problem*: Sellers launch 10–50 products a month. Writing compliant titles, 5 structured bullets, and backend keywords takes 45–60 minutes per SKU.
-   - *Willingness to Pay*: Freelancers and tools charge **$15–$50 per listing**. ListingWriter creates listings instantly for $0 API cost.
+   - *Willingness to Pay*: Freelancers and tools charge **$15–$50 per listing**. ListCraft creates listings instantly for $0 API cost.
 2. **Direct-to-Consumer (D2C) Brands & Shopify Merchants**:
    - *Problem*: D2C founders need lifestyle-driven, conversion-optimized copy rather than rigid catalog text.
    - *Willingness to Pay*: Monthly subscription ($29–$79/mo) to generate catalog listings across multi-channel expansions.
@@ -51,7 +51,7 @@ Creating high-ranking e-commerce listings is tedious, repetitive, and expensive.
 
 ### Exact Open Model Used: `llama3.2:3b` (or `llama3.1:8b`)
 
-ListingWriter is built exclusively on **open-weight, locally hosted models** running via [Ollama](https://ollama.com/).
+ListCraft is built exclusively on **open-weight, locally hosted models** running via [Ollama](https://ollama.com/).
 
 #### Why `llama3.2:3b`?
 - **Zero API Costs & Privacy**: No OpenAI, Anthropic, or proprietary APIs. All seller data, upcoming catalog launches, and competitive pricing remain 100% on the seller's machine.
@@ -79,7 +79,7 @@ ollama pull llama3.2:3b
 
 ### 2. Install Python Dependencies
 ```bash
-cd 01_Active/week2-listing-writer
+cd 01_Active/listcraft
 pip install -r requirements.txt
 ```
 
@@ -106,8 +106,8 @@ All unit, contract, and integration tests will run and report status.
 
 ## ⚠️ Honest Limitations
 
-While ListingWriter provides production-grade catalog drafting, open-weight models have inherent boundaries:
-1. **Dynamic Marketplace API Synced Validation**: ListingWriter enforces known character limits (e.g. 200 for Amazon, 140 for Etsy), but marketplace-specific category taxonomy changes (e.g. restricted keywords in medical/pesticide categories) must be reviewed by the seller.
+While ListCraft provides production-grade catalog drafting, open-weight models have inherent boundaries:
+1. **Dynamic Marketplace API Synced Validation**: ListCraft enforces known character limits (e.g. 200 for Amazon, 140 for Etsy), but marketplace-specific category taxonomy changes (e.g. restricted keywords in medical/pesticide categories) must be reviewed by the seller.
 2. **Context Hallucination Risk**: If input specs are extremely sparse (e.g. only "shoes"), the model will extrapolate reasonable everyday features; sellers should always provide accurate raw specifications.
 3. **Execution Speed vs. Hardware**: On pure CPU systems without AVX2 or dedicated GPU acceleration, generation may take 5–15 seconds per SKU, compared to 1–2 seconds on an Apple Silicon or NVIDIA RTX GPU.
 4. **No Direct Store Publishing**: This MVP generates clean copy and copy-to-clipboard blocks. Direct webhook/REST publishing to Amazon SP-API or Shopify Admin API is planned for future agency tiers.

@@ -7,7 +7,7 @@ from app.config import MARKETPLACE_LIMITS
 
 def test_system_prompt_instructs_json_only():
     sys_prompt = build_system_prompt()
-    assert "ListingWriter" in sys_prompt
+    assert "ListCraft" in sys_prompt
     assert "JSON" in sys_prompt
 
 

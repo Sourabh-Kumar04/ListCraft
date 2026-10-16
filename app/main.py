@@ -1,4 +1,4 @@
-"""FastAPI application entrypoint for ListingWriter."""
+"""FastAPI application entrypoint for ListCraft."""
 
 import os
 from fastapi import FastAPI, HTTPException
@@ -12,7 +12,7 @@ from app.ollama_client import OllamaClient
 from app.config import MARKETPLACE_LIMITS, MARKETPLACE_NAMES, OLLAMA_MODEL
 
 app = FastAPI(
-    title="ListingWriter",
+    title="ListCraft",
     description="Open-weight model product listing writer for Amazon, Flipkart, Etsy, and Shopify.",
     version="1.0.0",
 )
@@ -79,4 +79,4 @@ async def serve_index():
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)
-    return {"message": "ListingWriter API is running. Static UI not found."}
+    return {"message": "ListCraft API is running. Static UI not found."}
