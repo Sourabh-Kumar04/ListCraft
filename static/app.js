@@ -369,7 +369,7 @@ function renderListingImmediate(data) {
   const countEl = document.getElementById("titleCharCount");
   if (countEl) {
     countEl.textContent = `${data.char_count} / ${data.char_limit} chars`;
-    countEl.style.color = data.char_count <= data.char_limit ? "#059669" : "#e11d48";
+    countEl.style.color = data.char_count <= data.char_limit ? "#616d3b" : "#df6631";
   }
 
   // Progress Bar
@@ -377,7 +377,7 @@ function renderListingImmediate(data) {
   if (progressBar) {
     const pct = Math.min(100, Math.round((data.char_count / data.char_limit) * 100));
     progressBar.style.width = `${pct}%`;
-    progressBar.style.backgroundColor = data.char_count <= data.char_limit ? "#059669" : "#e11d48";
+    progressBar.style.backgroundColor = data.char_count <= data.char_limit ? "#df6631" : "#b91c1c";
   }
 
   // Bullets
@@ -485,11 +485,11 @@ function startStreamingReveal(data) {
   if (kwCountEl) kwCountEl.textContent = "0 keywords";
   if (countEl) {
     countEl.textContent = `0 / ${data.char_limit} chars`;
-    countEl.style.color = "#059669";
+    countEl.style.color = "#616d3b";
   }
   if (progressBar) {
     progressBar.style.width = "0%";
-    progressBar.style.backgroundColor = "#059669";
+    progressBar.style.backgroundColor = "#df6631";
   }
 
   // 1. Stream Title
@@ -510,12 +510,12 @@ function startStreamingReveal(data) {
       }
       if (countEl) {
         countEl.textContent = `${titleIdx} / ${data.char_limit} chars`;
-        countEl.style.color = titleIdx <= data.char_limit ? "#059669" : "#e11d48";
+        countEl.style.color = titleIdx <= data.char_limit ? "#616d3b" : "#df6631";
       }
       if (progressBar) {
         const pct = Math.min(100, Math.round((titleIdx / data.char_limit) * 100));
         progressBar.style.width = `${pct}%`;
-        progressBar.style.backgroundColor = titleIdx <= data.char_limit ? "#059669" : "#e11d48";
+        progressBar.style.backgroundColor = titleIdx <= data.char_limit ? "#df6631" : "#b91c1c";
       }
       streamState.timer = setTimeout(stepTitle, 12);
     } else {
