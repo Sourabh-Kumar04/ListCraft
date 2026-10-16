@@ -3,382 +3,473 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ListCraft | Open-Model E-Commerce Listing Generator</title>
+  <title>ListCraft — E-Commerce Listing Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-  <!-- App Container -->
   <div class="app-layout">
     <!-- Top Navigation Bar -->
     <header class="top-navbar">
-      <div class="brand">
-        <div class="logo-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
-            <path d="M3 6h18"/>
-            <path d="M16 10a4 4 0 0 1-8 0"/>
-          </svg>
-        </div>
-        <div class="brand-text">
-          <div class="brand-heading-row">
-            <h1>ListCraft</h1>
-            <span class="badge-saas">Local AI</span>
+      <div class="navbar-inner">
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/>
+              <path d="M3 6h18"/>
+              <path d="M16 10a4 4 0 0 1-8 0"/>
+            </svg>
           </div>
-          <span class="tagline">Open-Model E-Commerce Listing Generator</span>
+          <div class="brand-info">
+            <span class="brand-name">ListCraft</span>
+            <span class="brand-badge">Local Engine</span>
+          </div>
         </div>
-      </div>
-      <div class="header-status">
-        <div class="status-chip" id="ollamaStatus">
-          <span class="status-dot pulsing"></span>
-          <span id="ollamaStatusText">Checking Ollama...</span>
+
+        <div class="flow-stepper" aria-label="Workflow: Input to Export">
+          <span class="step-item active">Input</span>
+          <svg class="step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="step-item">Generate</span>
+          <svg class="step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="step-item">Review</span>
+          <svg class="step-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span class="step-item">Export</span>
         </div>
-        <div class="model-badge" id="activeModelBadge">
-          <span class="badge-label">Model:</span>
-          <span class="badge-value" id="activeModelName">llama3.2:3b</span>
+
+        <div class="header-status">
+          <div class="status-chip" id="ollamaStatus">
+            <span class="status-dot"></span>
+            <span id="ollamaStatusText">Checking Ollama...</span>
+          </div>
+          <div class="model-badge" id="activeModelBadge">
+            <span class="badge-label">Model</span>
+            <span class="badge-value" id="activeModelName">llama3.2:3b</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- Telemetry & System Status Strip -->
-    <div class="telemetry-strip">
-      <div class="telemetry-group">
-        <div class="telemetry-item">
-          <span class="status-dot-mini"></span>
-          <span>Local Engine Active</span>
-        </div>
-        <span class="sep">•</span>
-        <div class="telemetry-item">
-          <span>Context: <strong>8,192 tok</strong></span>
-        </div>
-        <span class="sep">•</span>
-        <div class="telemetry-item">
-          <span>Zero Cloud Fees</span>
-        </div>
-      </div>
-      <div class="telemetry-group">
-        <div class="telemetry-item">
-          <span>Inference: <strong class="accent-text">100% On-Device</strong></span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Main Workspace -->
+    <!-- Main Studio Workspace -->
     <main class="main-content">
-      <!-- Left Column: Input Form -->
-      <section class="panel input-panel">
-        <div class="panel-header">
-          <div class="panel-header-left">
-            <h2>Product Specifications</h2>
-            <span class="panel-subtitle">Enter details or select a catalog sample</span>
-          </div>
-          <div class="quick-samples">
-            <span class="samples-label">Preset:</span>
-            <button type="button" class="sample-btn active" id="btnSampleBottle">Water Bottle</button>
-            <button type="button" class="sample-btn" id="btnSampleWallet">Leather Wallet</button>
-            <button type="button" class="sample-btn" id="btnSampleDesk">Ergo Desk Lamp</button>
-          </div>
-        </div>
-
-        <form id="listingForm" class="product-form">
-          <!-- Target Marketplace Section -->
-          <div class="form-group">
-            <div class="label-row">
-              <label for="marketplaceSelect">Target Marketplace</label>
-              <span class="field-hint" id="marketplaceHint">Title limit: 200 chars</span>
-            </div>
-            <div class="marketplace-container">
-              <!-- Visual Marketplace Cards Grid -->
-              <div class="marketplace-pills" id="marketplacePills">
-                <div class="marketplace-pill active" data-market="amazon">
-                  <div class="pill-badge-check">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
+      <div class="studio-workspace">
+        
+        <!-- Left: Workbench Configuration Panel -->
+        <aside class="workbench-panel">
+          <div class="panel-card">
+            
+            <form id="listingForm" class="product-form" novalidate>
+              <!-- Presets Header Strip -->
+              <div class="section-block">
+                <div class="presets-row">
+                  <span class="section-label">Presets</span>
+                  <div class="sample-pills">
+                    <button type="button" class="sample-btn active" id="btnSampleBottle">Water Bottle</button>
+                    <button type="button" class="sample-btn" id="btnSampleWallet">Leather Wallet</button>
+                    <button type="button" class="sample-btn" id="btnSampleDesk">Ergo Desk Lamp</button>
                   </div>
-                  <span class="pill-name">Amazon</span>
-                  <span class="pill-limit">200 chars limit</span>
-                </div>
-                <div class="marketplace-pill" data-market="flipkart">
-                  <div class="pill-badge-check">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                  <span class="pill-name">Flipkart</span>
-                  <span class="pill-limit">200 chars limit</span>
-                </div>
-                <div class="marketplace-pill" data-market="etsy">
-                  <div class="pill-badge-check">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                  <span class="pill-name">Etsy</span>
-                  <span class="pill-limit">140 chars limit</span>
-                </div>
-                <div class="marketplace-pill" data-market="shopify">
-                  <div class="pill-badge-check">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  </div>
-                  <span class="pill-name">Shopify</span>
-                  <span class="pill-limit">Flexible format</span>
                 </div>
               </div>
-              <!-- Underlying Select Element for form & script compatibility -->
-              <div class="select-wrapper">
-                <select id="marketplaceSelect" name="marketplace" required>
-                  <option value="amazon" selected>Amazon (Factual, 5 Structured Bullets, 200 Char Limit)</option>
-                  <option value="flipkart">Flipkart (Value-Driven, Spec-Focused, 200 Char Limit)</option>
-                  <option value="etsy">Etsy (Handmade / Story, Aesthetic, 140 Char Limit)</option>
-                  <option value="shopify">Shopify (D2C Brand Pitch, Conversational, Flexible)</option>
-                </select>
+
+              <!-- Marketplace Selection -->
+              <div class="section-block">
+                <div class="label-row">
+                  <label for="marketplaceSelect" class="form-label">Target Marketplace</label>
+                  <span class="field-hint" id="marketplaceHint">Amazon Title Limit: 200 chars</span>
+                </div>
+                <div class="marketplace-selector-wrapper">
+                  <div class="marketplace-pills" id="marketplacePills">
+                    <button type="button" class="marketplace-pill active" data-market="amazon">
+                      <span class="pill-indicator" aria-hidden="true"></span>
+                      <span class="pill-title">Amazon</span>
+                      <span class="pill-meta">200 chars</span>
+                    </button>
+                    <button type="button" class="marketplace-pill" data-market="flipkart">
+                      <span class="pill-indicator" aria-hidden="true"></span>
+                      <span class="pill-title">Flipkart</span>
+                      <span class="pill-meta">200 chars</span>
+                    </button>
+                    <button type="button" class="marketplace-pill" data-market="etsy">
+                      <span class="pill-indicator" aria-hidden="true"></span>
+                      <span class="pill-title">Etsy</span>
+                      <span class="pill-meta">140 chars</span>
+                    </button>
+                    <button type="button" class="marketplace-pill" data-market="shopify">
+                      <span class="pill-indicator" aria-hidden="true"></span>
+                      <span class="pill-title">Shopify</span>
+                      <span class="pill-meta">Flexible</span>
+                    </button>
+                  </div>
+                  <!-- Hidden native select for form data and script sync -->
+                  <div class="sr-select-container">
+                    <select id="marketplaceSelect" name="marketplace" required>
+                      <option value="amazon" selected>Amazon (Factual, 5 Structured Bullets, 200 Char Limit)</option>
+                      <option value="flipkart">Flipkart (Value-Driven, Spec-Focused, 200 Char Limit)</option>
+                      <option value="etsy">Etsy (Handmade / Story, Aesthetic, 140 Char Limit)</option>
+                      <option value="shopify">Shopify (D2C Brand Pitch, Conversational, Flexible)</option>
+                    </select>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <!-- Product Name Input -->
-          <div class="form-group">
-            <div class="label-row">
-              <label for="productName">Product Name / Concept <span class="required">*</span></label>
-              <span class="field-hint" id="productNameCount">0 chars</span>
-            </div>
-            <input 
-              type="text" 
-              id="productName" 
-              name="product" 
-              placeholder="e.g. Stainless Steel Water Bottle" 
-              value="Stainless Steel Water Bottle" 
-              required
-            >
-          </div>
+              <!-- Product Name -->
+              <div class="section-block">
+                <div class="label-row">
+                  <label for="productName" class="form-label">Product Name / Concept <span class="required" aria-hidden="true">*</span></label>
+                  <span class="char-counter" id="productNameCount">0 chars</span>
+                </div>
+                <input 
+                  type="text" 
+                  id="productName" 
+                  name="product" 
+                  class="form-input"
+                  placeholder="e.g. Stainless Steel Water Bottle" 
+                  value="Stainless Steel Water Bottle" 
+                  required
+                >
+              </div>
 
-          <!-- Category & Price Row -->
-          <div class="form-row">
-            <div class="form-group">
-              <label for="categoryInput">Category</label>
-              <input 
-                type="text" 
-                id="categoryInput" 
-                name="category" 
-                placeholder="e.g. Sports & Outdoors > Drinkware" 
-                value="Sports & Outdoors / Drinkware"
-              >
-            </div>
-            <div class="form-group">
-              <label for="priceInput">Target Price</label>
-              <input 
-                type="text" 
-                id="priceInput" 
-                name="price" 
-                placeholder="e.g. $24.99 / ₹1,499" 
-                value="$24.99"
-              >
-            </div>
-          </div>
+              <!-- Category & Price Inline Row -->
+              <div class="section-block form-row-split">
+                <div class="form-col">
+                  <label for="categoryInput" class="form-label">Category</label>
+                  <input 
+                    type="text" 
+                    id="categoryInput" 
+                    name="category" 
+                    class="form-input"
+                    placeholder="e.g. Sports & Outdoors / Drinkware" 
+                    value="Sports & Outdoors / Drinkware"
+                  >
+                </div>
+                <div class="form-col">
+                  <label for="priceInput" class="form-label">Target Price</label>
+                  <input 
+                    type="text" 
+                    id="priceInput" 
+                    name="price" 
+                    class="form-input"
+                    placeholder="e.g. $24.99 / ₹1,499" 
+                    value="$24.99"
+                  >
+                </div>
+              </div>
 
-          <!-- Raw Features & Specs -->
-          <div class="form-group">
-            <div class="label-row">
-              <label for="specsInput">Raw Features &amp; Specifications <span class="required">*</span></label>
-              <span class="field-hint" id="specsCharCount">0 chars</span>
-            </div>
-            <textarea 
-              id="specsInput" 
-              name="specs" 
-              rows="6" 
-              placeholder="Paste raw bullet points, specs, materials, dimensions, certifications..." 
-              required
-            >1L capacity (32 oz), double-wall vacuum insulated, 18/8 food-grade stainless steel, matte black powder-coat finish, keeps cold for 24 hours, hot for 12 hours, leak-proof chug cap with carry handle, BPA-free, sweat-proof exterior, fits standard car cup holders.</textarea>
-            <div class="textarea-footer">
-              <span>Supports technical attributes, bullet points, or raw unformatted text</span>
-            </div>
-          </div>
+              <!-- Specifications & Raw Features -->
+              <div class="section-block">
+                <div class="label-row">
+                  <label for="specsInput" class="form-label">Specifications &amp; Features <span class="required" aria-hidden="true">*</span></label>
+                  <span class="char-counter" id="specsCharCount">0 chars</span>
+                </div>
+                <textarea 
+                  id="specsInput" 
+                  name="specs" 
+                  class="form-textarea"
+                  rows="5" 
+                  placeholder="Paste raw bullet points, specs, materials, dimensions, certifications..." 
+                  required
+                >1L capacity (32 oz), double-wall vacuum insulated, 18/8 food-grade stainless steel, matte black powder-coat finish, keeps cold for 24 hours, hot for 12 hours, leak-proof chug cap with carry handle, BPA-free, sweat-proof exterior, fits standard car cup holders.</textarea>
+              </div>
 
-          <!-- Generation Buttons -->
-          <div class="form-actions">
-            <button type="submit" class="submit-btn" id="generateBtn">
-              <span class="btn-text">Generate Listing with Local LLM</span>
-              <span class="btn-spinner hidden"></span>
-            </button>
-            <button type="button" class="btn-oneclick" id="btnGenerateExport">
-              <span class="btn-icon">⚡</span>
-              <span class="btn-text">Generate &amp; Export in One Click</span>
-            </button>
-          </div>
-        </form>
-
-        <!-- Privacy & Local Guarantee -->
-        <div class="privacy-note">
-          <div class="privacy-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-            </svg>
-          </div>
-          <div class="privacy-content">
-            <strong>100% Private &amp; Open-Source</strong>
-            <p>Generations execute strictly on your local Ollama runtime. Confidential product specifications never leave your machine.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Right Column: Generated Output -->
-      <section class="panel output-panel">
-        <div class="panel-header">
-          <div class="results-title-group">
-            <h2>Marketplace Listing</h2>
-            <span class="badge-pill" id="resultMarketplaceBadge">Amazon Ready</span>
-          </div>
-          <div class="output-actions">
-            <button type="button" class="btn-secondary" id="btnCopyAll" disabled>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
-              </svg>
-              <span>Copy Complete Listing</span>
-            </button>
-            <button type="button" class="btn-secondary" id="btnExport" disabled>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7 10 12 15 17 10"/>
-                <line x1="12" x2="12" y1="15" y2="3"/>
-              </svg>
-              <span>Export .md</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Empty Placeholder State -->
-        <div class="empty-state" id="emptyState">
-          <div class="empty-icon-box">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
-              <path d="M5 3v4"/>
-              <path d="M19 17v4"/>
-              <path d="M3 5h4"/>
-              <path d="M17 19h4"/>
-            </svg>
-          </div>
-          <h3>Ready to craft your listing</h3>
-          <p>Fill in product details or select a preset on the left, then click <strong>Generate Listing</strong> to create an optimized title, 5 bullet points, description, and keywords.</p>
-          <div class="empty-features-hint">
-            <span class="hint-tag">Optimized Title Limits</span>
-            <span class="hint-tag">5 High-Conversion Bullets</span>
-            <span class="hint-tag">SEO Keywords</span>
-          </div>
-        </div>
-
-        <!-- Results Display Container -->
-        <div class="results-container hidden" id="resultsContainer">
-          <!-- Title Card -->
-          <div class="result-card">
-            <div class="card-header">
-              <div class="card-label">
-                <span class="section-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/>
-                    <path d="M7 7h.01"/>
+              <!-- Primary Form Actions -->
+              <div class="form-actions-stack">
+                <button type="submit" class="btn-primary" id="generateBtn">
+                  <span class="btn-text">Generate Listing with Local LLM</span>
+                  <span class="btn-spinner hidden" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn-secondary" id="btnGenerateExport">
+                  <svg class="btn-icon-svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
                   </svg>
-                </span>
-                <h3>Optimized Title</h3>
-                <span class="char-count-pill" id="titleCharCount">0 / 200 chars</span>
+                  <span class="btn-text">Generate &amp; Export in One Click</span>
+                </button>
               </div>
-              <div class="card-header-actions">
-                <button class="btn-copy" data-copy-target="listingTitle">Copy</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <p class="title-text" id="listingTitle"></p>
-            </div>
-            <!-- Progress bar indicating character usage against marketplace limit -->
-            <div class="title-progress-track">
-              <div class="title-progress-bar" id="titleProgressBar"></div>
-            </div>
-          </div>
 
-          <!-- 5 Bullets Card -->
-          <div class="result-card">
-            <div class="card-header">
-              <div class="card-label">
-                <span class="section-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="8" x2="21" y1="6" y2="6"/>
-                    <line x1="8" x2="21" y1="12" y2="12"/>
-                    <line x1="8" x2="21" y1="18" y2="18"/>
-                    <line x1="3" x2="3.01" y1="6" y2="6"/>
-                    <line x1="3" x2="3.01" y1="12" y2="12"/>
-                    <line x1="3" x2="3.01" y1="18" y2="18"/>
-                  </svg>
-                </span>
-                <h3>5 Marketplace Bullets</h3>
-                <span class="badge-sub">High Conversion</span>
+              <!-- Security Footnote -->
+              <div class="privacy-footnote">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span>Runs 100% locally via Ollama. No data leaves your machine.</span>
               </div>
-              <div class="card-header-actions">
-                <button class="btn-copy" data-copy-target="bulletsList">Copy Bullets</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <ul class="bullets-list" id="bulletsList"></ul>
-            </div>
-          </div>
+            </form>
 
-          <!-- Description Card -->
-          <div class="result-card">
-            <div class="card-header">
-              <div class="card-label">
-                <span class="section-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="16" x2="8" y1="13" y2="13"/>
-                    <line x1="16" x2="8" y1="17" y2="17"/>
-                    <polyline points="10 9 9 9 8 9"/>
-                  </svg>
-                </span>
-                <h3>Product Description</h3>
-              </div>
-              <div class="card-header-actions">
-                <button class="btn-copy" data-copy-target="listingDescription">Copy</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="description-text" id="listingDescription"></div>
-            </div>
           </div>
+        </aside>
 
-          <!-- Backend Search Keywords Card -->
-          <div class="result-card">
-            <div class="card-header">
-              <div class="card-label">
-                <span class="section-icon">
-                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="11" cy="11" r="8"/>
-                    <line x1="21" x2="16.65" y1="21" y2="16.65"/>
-                  </svg>
-                </span>
-                <h3>Backend Search Keywords</h3>
-                <span class="badge-sub" id="keywordCount">0 keywords</span>
+        <!-- Right: Studio Canvas (Document Output) -->
+        <section class="canvas-panel">
+          <div class="canvas-card">
+            
+            <!-- Canvas Toolbar -->
+            <div class="canvas-toolbar">
+              <div class="toolbar-title-group">
+                <h2 class="canvas-title">Marketplace Listing</h2>
+                <span class="badge-pill" id="resultMarketplaceBadge">Amazon Ready</span>
               </div>
-              <div class="card-header-actions">
-                <button class="btn-copy" id="btnCopyKeywords">Copy Keywords</button>
+              <div class="toolbar-actions">
+                <button type="button" class="btn-action" id="btnCopyAll" disabled>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                    <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                  </svg>
+                  <span>Copy Complete Listing</span>
+                </button>
+                <button type="button" class="btn-action" id="btnExport" disabled>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7 10 12 15 17 10"/>
+                    <line x1="12" x2="12" y1="15" y2="3"/>
+                  </svg>
+                  <span>Export .md</span>
+                </button>
               </div>
             </div>
-            <div class="card-body">
-              <div class="keywords-tags" id="keywordsTags"></div>
+
+            <!-- 1. Blueprint Empty State -->
+            <div class="empty-state" id="emptyState">
+              <div class="blueprint-card">
+                <div class="blueprint-header">
+                  <div class="blueprint-icon-box">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" x2="8" y1="13" y2="13"/>
+                      <line x1="16" x2="8" y1="17" y2="17"/>
+                      <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                  </div>
+                  <div class="blueprint-title-wrap">
+                    <h3>Listing Blueprint</h3>
+                    <p>Enter product specifications on the left and select <strong>Generate Listing</strong> to produce a complete platform-ready document.</p>
+                  </div>
+                </div>
+
+                <div class="blueprint-zones">
+                  <div class="zone-item">
+                    <div class="zone-num">01</div>
+                    <div class="zone-meta">
+                      <span class="zone-name">Optimized Title</span>
+                      <span class="zone-desc">Strictly adheres to target platform character limits with brand and spec indexing.</span>
+                    </div>
+                  </div>
+                  <div class="zone-item">
+                    <div class="zone-num">02</div>
+                    <div class="zone-meta">
+                      <span class="zone-name">5 High-Conversion Bullets</span>
+                      <span class="zone-desc">Capitalized feature anchors with scannable benefit-driven proof points.</span>
+                    </div>
+                  </div>
+                  <div class="zone-item">
+                    <div class="zone-num">03</div>
+                    <div class="zone-meta">
+                      <span class="zone-name">Product Description</span>
+                      <span class="zone-desc">Structured narrative highlighting technical durability, daily use cases, and care.</span>
+                    </div>
+                  </div>
+                  <div class="zone-item">
+                    <div class="zone-num">04</div>
+                    <div class="zone-meta">
+                      <span class="zone-name">Backend Search Terms</span>
+                      <span class="zone-desc">High-intent search keywords formatted for direct catalog indexing.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="blueprint-callout">
+                  <span class="callout-label">Fast test:</span>
+                  <span>Click any preset above the form (Water Bottle, Leather Wallet, Ergo Desk Lamp) to immediately test generation.</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- 2. Loading Skeleton State (Active during LLM Generation) -->
+            <div class="loading-skeleton hidden" id="loadingSkeleton" aria-live="polite" aria-busy="true">
+              <div class="skeleton-header-msg">
+                <div class="skeleton-pulse-dot"></div>
+                <span>Local open-weight LLM is synthesizing your listing...</span>
+              </div>
+
+              <!-- Skeleton Title Card -->
+              <div class="skeleton-card">
+                <div class="skeleton-line-header">
+                  <div class="skeleton-bar" style="width: 140px; height: 16px;"></div>
+                  <div class="skeleton-bar" style="width: 80px; height: 16px;"></div>
+                </div>
+                <div class="skeleton-bar" style="width: 90%; height: 22px; margin-top: 12px;"></div>
+                <div class="skeleton-bar" style="width: 60%; height: 22px; margin-top: 8px;"></div>
+                <div class="skeleton-bar" style="width: 100%; height: 4px; margin-top: 16px;"></div>
+              </div>
+
+              <!-- Skeleton Bullets Card -->
+              <div class="skeleton-card">
+                <div class="skeleton-line-header">
+                  <div class="skeleton-bar" style="width: 160px; height: 16px;"></div>
+                  <div class="skeleton-bar" style="width: 70px; height: 16px;"></div>
+                </div>
+                <div class="skeleton-bullets-list">
+                  <div class="skeleton-bullet-row">
+                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
+                    <div class="skeleton-bar" style="width: 92%; height: 16px;"></div>
+                  </div>
+                  <div class="skeleton-bullet-row">
+                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
+                    <div class="skeleton-bar" style="width: 85%; height: 16px;"></div>
+                  </div>
+                  <div class="skeleton-bullet-row">
+                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
+                    <div class="skeleton-bar" style="width: 95%; height: 16px;"></div>
+                  </div>
+                  <div class="skeleton-bullet-row">
+                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
+                    <div class="skeleton-bar" style="width: 78%; height: 16px;"></div>
+                  </div>
+                  <div class="skeleton-bullet-row">
+                    <div class="skeleton-bar" style="width: 20px; height: 16px;"></div>
+                    <div class="skeleton-bar" style="width: 88%; height: 16px;"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skeleton Description Card -->
+              <div class="skeleton-card">
+                <div class="skeleton-line-header">
+                  <div class="skeleton-bar" style="width: 150px; height: 16px;"></div>
+                  <div class="skeleton-bar" style="width: 60px; height: 16px;"></div>
+                </div>
+                <div class="skeleton-bar" style="width: 100%; height: 16px; margin-top: 12px;"></div>
+                <div class="skeleton-bar" style="width: 96%; height: 16px; margin-top: 8px;"></div>
+                <div class="skeleton-bar" style="width: 74%; height: 16px; margin-top: 8px;"></div>
+              </div>
+
+              <!-- Skeleton Keywords Card -->
+              <div class="skeleton-card">
+                <div class="skeleton-line-header">
+                  <div class="skeleton-bar" style="width: 170px; height: 16px;"></div>
+                  <div class="skeleton-bar" style="width: 90px; height: 16px;"></div>
+                </div>
+                <div class="skeleton-pill-row">
+                  <div class="skeleton-bar" style="width: 110px; height: 26px; border-radius: 9999px;"></div>
+                  <div class="skeleton-bar" style="width: 130px; height: 26px; border-radius: 9999px;"></div>
+                  <div class="skeleton-bar" style="width: 95px; height: 26px; border-radius: 9999px;"></div>
+                  <div class="skeleton-bar" style="width: 120px; height: 26px; border-radius: 9999px;"></div>
+                  <div class="skeleton-bar" style="width: 85px; height: 26px; border-radius: 9999px;"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 3. Generated Results Container -->
+            <div class="results-container hidden" id="resultsContainer">
+              
+              <!-- Section 1: Optimized Title -->
+              <div class="result-card">
+                <div class="card-header">
+                  <div class="card-label">
+                    <span class="section-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/>
+                        <path d="M7 7h.01"/>
+                      </svg>
+                    </span>
+                    <h3>Optimized Title</h3>
+                    <span class="char-count-pill" id="titleCharCount">0 / 200 chars</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="btn-copy" data-copy-target="listingTitle">Copy</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <p class="title-text" id="listingTitle"></p>
+                </div>
+                <div class="title-progress-track">
+                  <div class="title-progress-bar" id="titleProgressBar"></div>
+                </div>
+              </div>
+
+              <!-- Section 2: 5 Structured Bullets -->
+              <div class="result-card">
+                <div class="card-header">
+                  <div class="card-label">
+                    <span class="section-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="8" x2="21" y1="6" y2="6"/>
+                        <line x1="8" x2="21" y1="12" y2="12"/>
+                        <line x1="8" x2="21" y1="18" y2="18"/>
+                        <line x1="3" x2="3.01" y1="6" y2="6"/>
+                        <line x1="3" x2="3.01" y1="12" y2="12"/>
+                        <line x1="3" x2="3.01" y1="18" y2="18"/>
+                      </svg>
+                    </span>
+                    <h3>5 Marketplace Bullets</h3>
+                    <span class="badge-sub">High Conversion</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="btn-copy" data-copy-target="bulletsList">Copy Bullets</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <ul class="bullets-list" id="bulletsList"></ul>
+                </div>
+              </div>
+
+              <!-- Section 3: Product Description -->
+              <div class="result-card">
+                <div class="card-header">
+                  <div class="card-label">
+                    <span class="section-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" x2="8" y1="13" y2="13"/>
+                        <line x1="16" x2="8" y1="17" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                      </svg>
+                    </span>
+                    <h3>Product Description</h3>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="btn-copy" data-copy-target="listingDescription">Copy</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="description-text" id="listingDescription"></div>
+                </div>
+              </div>
+
+              <!-- Section 4: Backend Search Terms -->
+              <div class="result-card">
+                <div class="card-header">
+                  <div class="card-label">
+                    <span class="section-icon" aria-hidden="true">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <line x1="21" x2="16.65" y1="21" y2="16.65"/>
+                      </svg>
+                    </span>
+                    <h3>Backend Search Keywords</h3>
+                    <span class="badge-sub" id="keywordCount">0 keywords</span>
+                  </div>
+                  <div class="card-header-actions">
+                    <button class="btn-copy" id="btnCopyKeywords">Copy Keywords</button>
+                  </div>
+                </div>
+                <div class="card-body">
+                  <div class="keywords-tags" id="keywordsTags"></div>
+                </div>
+              </div>
+
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+      </div>
     </main>
   </div>
 
-  <!-- Toast Notification -->
-  <div id="toast" class="toast hidden">Copied to clipboard!</div>
+  <!-- Accessible Toast Notification -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite">Copied to clipboard!</div>
 
   <script src="/static/app.js"></script>
 </body>

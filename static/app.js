@@ -1,5 +1,5 @@
 // ListCraft Frontend Logic
-// Obsidian Synth SaaS Redesign
+// High-Precision Studio Architecture
 
 const PRESETS = {
   bottle: {
@@ -53,22 +53,22 @@ async function checkHealth() {
     if (res.ok) {
       const data = await res.json();
       if (data.ollama_connected) {
-        dot.className = "status-dot online";
-        text.textContent = "Ollama Active";
-        if (data.model) {
+        if (dot) dot.className = "status-dot online";
+        if (text) text.textContent = "Ollama Active";
+        if (data.model && modelText) {
           modelText.textContent = data.model;
         }
       } else {
-        dot.className = "status-dot offline";
-        text.textContent = "Ollama Disconnected";
+        if (dot) dot.className = "status-dot offline";
+        if (text) text.textContent = "Ollama Disconnected";
       }
     } else {
-      dot.className = "status-dot offline";
-      text.textContent = "API Degraded";
+      if (dot) dot.className = "status-dot offline";
+      if (text) text.textContent = "API Degraded";
     }
   } catch (err) {
-    dot.className = "status-dot offline";
-    text.textContent = "Offline (Local)";
+    if (dot) dot.className = "status-dot offline";
+    if (text) text.textContent = "Offline (Local)";
   }
 }
 
@@ -180,10 +180,14 @@ function loadPreset(key, clickedBtn) {
   document.querySelectorAll(".sample-btn").forEach(b => b.classList.remove("active"));
   if (clickedBtn) clickedBtn.classList.add("active");
 
-  document.getElementById("productName").value = data.product;
-  document.getElementById("categoryInput").value = data.category;
-  document.getElementById("priceInput").value = data.price;
-  document.getElementById("specsInput").value = data.specs;
+  const prodEl = document.getElementById("productName");
+  if (prodEl) prodEl.value = data.product;
+  const catEl = document.getElementById("categoryInput");
+  if (catEl) catEl.value = data.category;
+  const priceEl = document.getElementById("priceInput");
+  if (priceEl) priceEl.value = data.price;
+  const specsEl = document.getElementById("specsInput");
+  if (specsEl) specsEl.value = data.specs;
 
   updateInputCounters();
 }
@@ -192,14 +196,19 @@ async function handleGenerate(e, autoExport = false) {
   if (e) e.preventDefault();
 
   const generateBtn = document.getElementById("generateBtn");
-  const btnText = generateBtn.querySelector(".btn-text");
-  const spinner = generateBtn.querySelector(".btn-spinner");
+  const btnText = generateBtn ? generateBtn.querySelector(".btn-text") : null;
+  const spinner = generateBtn ? generateBtn.querySelector(".btn-spinner") : null;
 
-  const marketplace = document.getElementById("marketplaceSelect").value;
-  const product = document.getElementById("productName").value.trim();
-  const category = document.getElementById("categoryInput").value.trim();
-  const price = document.getElementById("priceInput").value.trim();
-  const specs = document.getElementById("specsInput").value.trim();
+  const marketplaceEl = document.getElementById("marketplaceSelect");
+  const marketplace = marketplaceEl ? marketplaceEl.value : "amazon";
+  const productEl = document.getElementById("productName");
+  const product = productEl ? productEl.value.trim() : "";
+  const categoryEl = document.getElementById("categoryInput");
+  const category = categoryEl ? categoryEl.value.trim() : "";
+  const priceEl = document.getElementById("priceInput");
+  const price = priceEl ? priceEl.value.trim() : "";
+  const specsEl = document.getElementById("specsInput");
+  const specs = specsEl ? specsEl.value.trim() : "";
 
   if (!product || !specs) {
     showToast("Please fill in the product name and specifications.");
@@ -207,9 +216,18 @@ async function handleGenerate(e, autoExport = false) {
   }
 
   // Set loading state
-  generateBtn.disabled = true;
-  btnText.textContent = "Writing Listing with Local LLM...";
+  if (generateBtn) generateBtn.disabled = true;
+  if (btnText) btnText.textContent = "Writing Listing with Local LLM...";
   if (spinner) spinner.classList.remove("hidden");
+
+  // Show loading skeleton in output canvas
+  const skeleton = document.getElementById("loadingSkeleton");
+  const emptyState = document.getElementById("emptyState");
+  const container = document.getElementById("resultsContainer");
+
+  if (emptyState) emptyState.classList.add("hidden");
+  if (container) container.classList.add("hidden");
+  if (skeleton) skeleton.classList.remove("hidden");
 
   try {
     const res = await fetch("/api/generate", {
@@ -237,13 +255,20 @@ async function handleGenerate(e, autoExport = false) {
     alert(`Generation Error: ${err.message}\n\nPlease check that Ollama is running ('ollama serve') and the model is downloaded.`);
     return null;
   } finally {
-    generateBtn.disabled = false;
-    btnText.textContent = "Generate Listing with Local LLM";
+    if (generateBtn) generateBtn.disabled = false;
+    if (btnText) btnText.textContent = "Generate Listing with Local LLM";
     if (spinner) spinner.classList.add("hidden");
+    if (skeleton) skeleton.classList.add("hidden");
+    if (!currentListing) {
+      if (emptyState) emptyState.classList.remove("hidden");
+    }
   }
 }
 
 function renderListing(data) {
+  const skeleton = document.getElementById("loadingSkeleton");
+  if (skeleton) skeleton.classList.add("hidden");
+
   const emptyState = document.getElementById("emptyState");
   if (emptyState) emptyState.classList.add("hidden");
 
@@ -271,9 +296,9 @@ function renderListing(data) {
   if (countEl) {
     countEl.textContent = `${data.char_count} / ${data.char_limit} chars`;
     if (data.char_count <= data.char_limit) {
-      countEl.style.color = "#10b981";
+      countEl.style.color = "#059669";
     } else {
-      countEl.style.color = "#f43f5e";
+      countEl.style.color = "#e11d48";
     }
   }
 
@@ -282,7 +307,7 @@ function renderListing(data) {
   if (progressBar) {
     const pct = Math.min(100, Math.round((data.char_count / data.char_limit) * 100));
     progressBar.style.width = `${pct}%`;
-    progressBar.style.backgroundColor = data.char_count <= data.char_limit ? "#10b981" : "#f43f5e";
+    progressBar.style.backgroundColor = data.char_count <= data.char_limit ? "#059669" : "#e11d48";
   }
 
   // Bullets
@@ -304,12 +329,12 @@ function renderListing(data) {
       if (bullet.startsWith("[") && bullet.includes("]")) {
         const endBracket = bullet.indexOf("]");
         const header = bullet.substring(0, endBracket + 1);
-        const rest = bullet.substring(endBracket + 1);
-        content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong>${escapeHtml(rest)}`;
+        const rest = bullet.substring(endBracket + 1).replace(/^[\s:]+/, "");
+        content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong> ${escapeHtml(rest)}`;
       } else if (colonIdx > 0 && colonIdx < 40) {
-        const header = bullet.substring(0, colonIdx + 1);
-        const rest = bullet.substring(colonIdx + 1);
-        content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}</strong>${escapeHtml(rest)}`;
+        const header = bullet.substring(0, colonIdx);
+        const rest = bullet.substring(colonIdx + 1).trim();
+        content.innerHTML = `<strong class="bullet-header">${escapeHtml(header)}:</strong> ${escapeHtml(rest)}`;
       } else {
         content.textContent = bullet;
       }
@@ -317,7 +342,8 @@ function renderListing(data) {
       const copyBtn = document.createElement("button");
       copyBtn.className = "bullet-copy-mini";
       copyBtn.title = "Copy this bullet";
-      copyBtn.textContent = "📋";
+      copyBtn.setAttribute("aria-label", `Copy bullet ${idx + 1}`);
+      copyBtn.innerHTML = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
       copyBtn.addEventListener("click", () => {
         navigator.clipboard.writeText(bullet);
         showToast(`Copied bullet #${idx + 1}`);
