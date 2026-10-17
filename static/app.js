@@ -1,5 +1,5 @@
 // ListCraft Frontend Logic
-// High-Precision Studio Architecture
+// Linear Stepped Studio Pipeline Architecture (Round 11)
 
 const PRESETS = {
   bottle: {
@@ -23,14 +23,15 @@ const PRESETS = {
 };
 
 const MARKETPLACE_INFO = {
-  amazon: { limit: 200, label: "Amazon Ready", hint: "Amazon Title Limit: 200 chars (Factual & Structured)" },
-  flipkart: { limit: 200, label: "Flipkart Ready", hint: "Flipkart Title Limit: 200 chars (Clear Specs & High Discovery)" },
-  etsy: { limit: 140, label: "Etsy Ready", hint: "Etsy Title Limit: 140 chars (Aesthetic & Gift Keywords)" },
-  shopify: { limit: 160, label: "Shopify Ready", hint: "Shopify Title Limit: Flexible / 160 chars recommended" }
+  amazon: { limit: 200, label: "Amazon Ready", hint: "Amazon Title Limit: 200 chars (Factual & Structured)", badge: "Amazon · 200 Chars" },
+  flipkart: { limit: 200, label: "Flipkart Ready", hint: "Flipkart Title Limit: 200 chars (Clear Specs & High Discovery)", badge: "Flipkart · 200 Chars" },
+  etsy: { limit: 140, label: "Etsy Ready", hint: "Etsy Title Limit: 140 chars (Aesthetic & Gift Keywords)", badge: "Etsy · 140 Chars" },
+  shopify: { limit: 160, label: "Shopify Ready", hint: "Shopify Title Limit: Flexible / 160 chars recommended", badge: "Shopify · Flexible" }
 };
 
 let currentListing = null;
 let activeStream = null;
+let currentStep = 1;
 
 function stopCurrentStream() {
   if (activeStream) {
@@ -53,11 +54,17 @@ function skipStream() {
 document.addEventListener("DOMContentLoaded", () => {
   checkHealth();
   setupEventListeners();
+  setupStepWizard();
   updateMarketplaceHint();
   updateInputCounters();
+  updateReviewDossier();
+
   if (window.__INITIAL_LISTING__) {
     currentListing = window.__INITIAL_LISTING__;
+    goToStep(4);
     renderListing(window.__INITIAL_LISTING__, { immediate: true });
+  } else {
+    goToStep(1);
   }
 });
 
@@ -91,6 +98,160 @@ async function checkHealth() {
   }
 }
 
+// Stepped Wizard Navigation System
+function setupStepWizard() {
+  // Stepper indicator clicks
+  document.querySelectorAll(".step-indicator-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const targetStep = parseInt(btn.getAttribute("data-step"), 10);
+      if (targetStep) goToStep(targetStep);
+    });
+  });
+
+  // Next Step buttons
+  document.querySelectorAll('[data-action="next-step"]').forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep < 4) {
+        goToStep(currentStep + 1);
+      }
+    });
+  });
+
+  // Previous Step buttons
+  document.querySelectorAll('[data-action="prev-step"]').forEach(btn => {
+    btn.addEventListener("click", () => {
+      if (currentStep > 1) {
+        goToStep(currentStep - 1);
+      }
+    });
+  });
+
+  // Direct Jump buttons
+  document.querySelectorAll('[data-goto-step]').forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const target = parseInt(e.currentTarget.getAttribute("data-goto-step"), 10);
+      if (target) goToStep(target);
+    });
+  });
+
+  // Keyboard navigation (Ctrl+Enter / Cmd+Enter to advance or generate)
+  document.addEventListener("keydown", (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      if (currentStep === 1 || currentStep === 2) {
+        e.preventDefault();
+        goToStep(currentStep + 1);
+      } else if (currentStep === 3) {
+        e.preventDefault();
+        handleGenerate(e);
+      }
+    }
+  });
+}
+
+function goToStep(stepNum) {
+  const target = Math.max(1, Math.min(4, stepNum));
+
+  // If moving forward from Step 1, validate inputs
+  if (target > 1 && currentStep === 1) {
+    const prod = document.getElementById("productName");
+    const specs = document.getElementById("specsInput");
+    if (!prod || !prod.value.trim()) {
+      showToast("Please enter a product name or pick a specimen.");
+      if (prod) prod.focus();
+      return;
+    }
+    if (!specs || !specs.value.trim()) {
+      showToast("Please enter technical specifications or pick a specimen.");
+      if (specs) specs.focus();
+      return;
+    }
+  }
+
+  currentStep = target;
+
+  // 1. Toggle Step Panels
+  document.querySelectorAll(".wizard-panel").forEach(panel => {
+    const pNum = parseInt(panel.getAttribute("data-panel"), 10);
+    if (pNum === currentStep) {
+      panel.classList.remove("hidden");
+      panel.classList.add("active");
+    } else {
+      panel.classList.remove("active");
+      panel.classList.add("hidden");
+    }
+  });
+
+  // 2. Update Stepper Header Indicators
+  document.querySelectorAll(".step-indicator-btn").forEach(btn => {
+    const s = parseInt(btn.getAttribute("data-step"), 10);
+    if (s === currentStep) {
+      btn.classList.add("active");
+      btn.classList.remove("completed");
+    } else if (s < currentStep) {
+      btn.classList.remove("active");
+      btn.classList.add("completed");
+    } else {
+      btn.classList.remove("active");
+      btn.classList.remove("completed");
+    }
+  });
+
+  // 3. Update Progress Rail
+  const progressFill = document.getElementById("stepperProgressBar");
+  if (progressFill) {
+    const pcts = { 1: "25%", 2: "50%", 3: "75%", 4: "100%" };
+    progressFill.style.width = pcts[currentStep] || "25%";
+  }
+
+  // 4. Update Step 3 Review Dossier
+  if (currentStep === 3) {
+    updateReviewDossier();
+  }
+
+  // 5. Handle Step 4 Display Logic
+  if (currentStep === 4) {
+    const placeholder = document.getElementById("stage4Placeholder");
+    const results = document.getElementById("resultsContainer");
+    if (currentListing) {
+      if (placeholder) placeholder.classList.add("hidden");
+      if (results) results.classList.remove("hidden");
+    } else {
+      if (placeholder) placeholder.classList.remove("hidden");
+      if (results) results.classList.add("hidden");
+    }
+  }
+
+  // Scroll to top of panel smoothly
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateReviewDossier() {
+  const prod = document.getElementById("productName");
+  const specs = document.getElementById("specsInput");
+  const select = document.getElementById("marketplaceSelect");
+  const category = document.getElementById("categoryInput");
+  const price = document.getElementById("priceInput");
+
+  const rProd = document.getElementById("reviewProduct");
+  const rMarket = document.getElementById("reviewMarketplace");
+  const rPricing = document.getElementById("reviewPricing");
+  const rSpecs = document.getElementById("reviewSpecs");
+
+  if (rProd && prod) rProd.textContent = prod.value.trim() || "Untitled Product";
+  if (rSpecs && specs) rSpecs.textContent = specs.value.trim() || "No specifications entered";
+
+  if (rMarket && select) {
+    const info = MARKETPLACE_INFO[select.value] || MARKETPLACE_INFO.amazon;
+    rMarket.textContent = info.badge || `${select.value.toUpperCase()} · Limit Set`;
+  }
+
+  if (rPricing) {
+    const pVal = price && price.value.trim() ? price.value.trim() : "Unset";
+    const cVal = category && category.value.trim() ? category.value.trim() : "General";
+    rPricing.textContent = `${pVal} · ${cVal}`;
+  }
+}
+
 function setupEventListeners() {
   // Preset buttons
   const btnBottle = document.getElementById("btnSampleBottle");
@@ -104,7 +265,10 @@ function setupEventListeners() {
   // Marketplace selection change
   const select = document.getElementById("marketplaceSelect");
   if (select) {
-    select.addEventListener("change", updateMarketplaceHint);
+    select.addEventListener("change", () => {
+      updateMarketplaceHint();
+      updateReviewDossier();
+    });
   }
 
   // Interactive marketplace pills
@@ -118,15 +282,31 @@ function setupEventListeners() {
     });
   });
 
-  // Real-time character counters
+  // Real-time character counters & dossier updates
   const prodInput = document.getElementById("productName");
   if (prodInput) {
-    prodInput.addEventListener("input", updateInputCounters);
+    prodInput.addEventListener("input", () => {
+      updateInputCounters();
+      updateReviewDossier();
+    });
   }
 
   const specsTextarea = document.getElementById("specsInput");
   if (specsTextarea) {
-    specsTextarea.addEventListener("input", updateInputCounters);
+    specsTextarea.addEventListener("input", () => {
+      updateInputCounters();
+      updateReviewDossier();
+    });
+  }
+
+  const catInput = document.getElementById("categoryInput");
+  if (catInput) {
+    catInput.addEventListener("input", updateReviewDossier);
+  }
+
+  const prInput = document.getElementById("priceInput");
+  if (prInput) {
+    prInput.addEventListener("input", updateReviewDossier);
   }
 
   // Form submit
@@ -197,7 +377,11 @@ function loadPreset(key, clickedBtn) {
   if (!data) return;
 
   document.querySelectorAll(".sample-btn").forEach(b => b.classList.remove("active"));
-  if (clickedBtn) clickedBtn.classList.add("active");
+  if (clickedBtn) {
+    const parentBtn = clickedBtn.closest(".sample-btn");
+    if (parentBtn) parentBtn.classList.add("active");
+    else clickedBtn.classList.add("active");
+  }
 
   const prodEl = document.getElementById("productName");
   if (prodEl) prodEl.value = data.product;
@@ -209,14 +393,12 @@ function loadPreset(key, clickedBtn) {
   if (specsEl) specsEl.value = data.specs;
 
   updateInputCounters();
+  updateReviewDossier();
+  showToast(`Loaded "${data.product}" specimen`);
 }
 
 async function handleGenerate(e, autoExport = false) {
   if (e) e.preventDefault();
-
-  const generateBtn = document.getElementById("generateBtn");
-  const btnText = generateBtn ? generateBtn.querySelector(".btn-text") : null;
-  const spinner = generateBtn ? generateBtn.querySelector(".btn-spinner") : null;
 
   const marketplaceEl = document.getElementById("marketplaceSelect");
   const marketplace = marketplaceEl ? marketplaceEl.value : "amazon";
@@ -231,21 +413,27 @@ async function handleGenerate(e, autoExport = false) {
 
   if (!product || !specs) {
     showToast("Please fill in the product name and specifications.");
+    goToStep(1);
     return null;
   }
+
+  // Switch to Stage 3 to show synthesis state & live milestones
+  goToStep(3);
+
+  const generateBtn = document.getElementById("generateBtn");
+  const btnText = generateBtn ? generateBtn.querySelector(".btn-text") : null;
+  const spinner = generateBtn ? generateBtn.querySelector(".btn-spinner") : null;
 
   // Set loading state
   if (generateBtn) generateBtn.disabled = true;
   if (btnText) btnText.textContent = "Synthesizing Listing with Local LLM...";
   if (spinner) spinner.classList.remove("hidden");
 
-  // Show loading skeleton in output canvas
+  // Show loading skeleton in Stage 3
   const skeleton = document.getElementById("loadingSkeleton");
   const emptyState = document.getElementById("emptyState");
-  const container = document.getElementById("resultsContainer");
 
   if (emptyState) emptyState.classList.add("hidden");
-  if (container) container.classList.add("hidden");
   if (skeleton) skeleton.classList.remove("hidden");
 
   // AI Thinking State Tracker
@@ -285,7 +473,11 @@ async function handleGenerate(e, autoExport = false) {
 
     const listing = await res.json();
     currentListing = listing;
+
+    // Transition to Stage 4 (Results Dossier)
+    goToStep(4);
     renderListing(listing);
+
     if (autoExport) {
       exportListing();
     } else {
@@ -317,6 +509,9 @@ function renderListing(data, options = {}) {
 
   const emptyState = document.getElementById("emptyState");
   if (emptyState) emptyState.classList.add("hidden");
+
+  const placeholder = document.getElementById("stage4Placeholder");
+  if (placeholder) placeholder.classList.add("hidden");
 
   const container = document.getElementById("resultsContainer");
   if (container) container.classList.remove("hidden");
