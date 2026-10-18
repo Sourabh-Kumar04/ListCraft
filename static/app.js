@@ -52,6 +52,10 @@ function skipStream() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (window.location.search.includes("view=studio")) {
+    document.body.classList.add("view-studio");
+  }
+
   checkHealth();
   setupEventListeners();
   setupStepWizard();
@@ -61,10 +65,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (window.__INITIAL_LISTING__) {
     currentListing = window.__INITIAL_LISTING__;
-    goToStep(4);
+    goToStep(4, false);
     renderListing(window.__INITIAL_LISTING__, { immediate: true });
   } else {
-    goToStep(1);
+    goToStep(1, false);
+  }
+
+  if (window.location.hash) {
+    try {
+      const targetEl = document.querySelector(window.location.hash);
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "instant" });
+      }
+    } catch (_) {}
   }
 });
 
@@ -148,7 +161,7 @@ function setupStepWizard() {
   });
 }
 
-function goToStep(stepNum) {
+function goToStep(stepNum, shouldScroll = true) {
   const target = Math.max(1, Math.min(4, stepNum));
 
   // If moving forward from Step 1, validate inputs
@@ -221,8 +234,13 @@ function goToStep(stepNum) {
     }
   }
 
-  // Scroll to top of panel smoothly
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  // Keep studio section in focus smoothly
+  if (shouldScroll) {
+    const studioEl = document.getElementById("studio");
+    if (studioEl && window.scrollY > studioEl.offsetTop - 120) {
+      studioEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 }
 
 function updateReviewDossier() {
