@@ -49,15 +49,15 @@ Creating high-ranking e-commerce listings is tedious, repetitive, and expensive.
 
 ## 🧠 Open-Weight Model Architecture
 
-### Exact Open Model Used: `llama3.2:3b` (or `llama3.1:8b`)
+### Exact Open Model Used: `gemma2:2b` (or `gemma2:9b`)
 
-ListCraft is built exclusively on **open-weight, locally hosted models** running via [Ollama](https://ollama.com/).
+ListCraft is built exclusively on **open-weight, locally hosted Google Gemma models** running via [Ollama](https://ollama.com/) (competing in the Hacktoberfest **Best Use of Gemma** partner category).
 
-#### Why `llama3.2:3b`?
-- **Zero API Costs & Privacy**: No OpenAI, Anthropic, or proprietary APIs. All seller data, upcoming catalog launches, and competitive pricing remain 100% on the seller's machine.
-- **Superior Instruction-Following**: Meta's Llama 3.2 3B architecture excels at strict structured output (JSON schema adherence) and tone modulation across distinct marketplaces.
-- **Accessible Hardware Footprint**: Consumes ~2.2 GB of VRAM/RAM, allowing it to run smoothly on standard laptops and developer machines (including 8GB RAM Linux/WSL environments) with fast sub-second token generation.
-- **Drop-in Flexibility**: Users with 16GB+ RAM or dedicated GPUs can seamlessly switch to `llama3.1:8b` simply by setting `OLLAMA_MODEL=llama3.1:8b`.
+#### Why `gemma2:2b`?
+- **Zero API Costs & Total Privacy**: No OpenAI, Anthropic, or proprietary APIs. All seller data, upcoming catalog launches, and competitive pricing remain 100% on the seller's machine with zero network egress.
+- **Google DeepMind Open Architecture**: Built on Google's lightweight, state-of-the-art Gemma 2 architecture, engineered for nuanced semantic understanding, high-fidelity e-commerce copy, and strict JSON formatting.
+- **Ultra-Lean Hardware Footprint**: Consumes only ~1.6 GB of VRAM/RAM, allowing it to run smoothly on standard laptops and developer machines (including 4GB–8GB RAM Linux/WSL environments) with fast local token generation.
+- **Drop-in Flexibility**: Users with 16GB+ RAM or dedicated GPUs can seamlessly switch to `gemma2:9b` simply by setting `OLLAMA_MODEL=gemma2:9b`.
 
 ---
 
@@ -73,9 +73,9 @@ ListCraft is built exclusively on **open-weight, locally hosted models** running
 ollama serve
 
 # In another terminal, pull the open-weight model
-ollama pull llama3.2:3b
+ollama pull gemma2:2b
 ```
-*(Optional: If your machine has 16GB+ RAM and a GPU, you can pull `llama3.1:8b` and run `export OLLAMA_MODEL=llama3.1:8b`)*
+*(Optional: If your machine has 16GB+ RAM and a GPU, you can pull `gemma2:9b` and run `export OLLAMA_MODEL=gemma2:9b`)*
 
 ### 2. Install Python Dependencies
 ```bash

@@ -24,14 +24,14 @@ def test_health_endpoint():
     with patch("app.main.ollama_client.check_health", new_callable=AsyncMock) as mock_health:
         mock_health.return_value = {
             "connected": True,
-            "models": ["llama3.2:3b"],
+            "models": ["gemma2:2b"],
             "status": "ready"
         }
         res = client.get("/api/health")
         assert res.status_code == 200
         data = res.json()
         assert data["ollama_connected"] is True
-        assert "llama3.2:3b" in data["available_models"]
+        assert "gemma2:2b" in data["available_models"]
 
 
 def test_generate_endpoint_with_mocked_llm():
