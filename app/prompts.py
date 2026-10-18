@@ -10,6 +10,7 @@ MARKETPLACE_GUIDELINES: Dict[str, Dict[str, Any]] = {
         "tone": "Factual, authoritative, highly structured, compliance-ready",
         "style_instructions": (
             "- Title MUST be <= 200 characters. Formula: [Brand] + [Core Product] + [Key Specs/Materials] + [Size/Color/Model].\n"
+            "- Do NOT invent or assume a brand name. Only include a brand name if one is explicitly provided in the product details. If no brand is given, write the title without any brand.\n"
             "- Strictly NO promotional buzzwords in title or bullets (e.g., 'Best Seller', 'Free Shipping', '#1', 'Guarantee').\n"
             "- Exactly 5 bullet points. Each bullet MUST start with a capitalized benefit header in brackets or followed by a colon (e.g., '[VACUUM INSULATION]: Keeps drinks ice-cold for 24 hours...').\n"
             "- Description: Professional, detailed product overview focusing on durability, specifications, and everyday utility.\n"
@@ -22,6 +23,7 @@ MARKETPLACE_GUIDELINES: Dict[str, Dict[str, Any]] = {
         "tone": "Value-driven, clear, spec-focused, high discovery",
         "style_instructions": (
             "- Title MUST be <= 200 characters. Formula: [Brand] + [Product Name] + [Key Feature / Capacity] + [Color / Pack Details].\n"
+            "- Do NOT invent or assume a brand name. Only include a brand name if one is explicitly provided in the product details. If no brand is given, write the title without any brand.\n"
             "- Clear specifications that Indian online shoppers look for (capacity, material grade, dimensions, usage scenario).\n"
             "- Exactly 5 bullet points highlighting value-for-money, build quality, usability, in-the-box utility, and care instructions.\n"
             "- Description: Engaging narrative focusing on daily utility, reliability, and maintenance tips.\n"
@@ -34,6 +36,7 @@ MARKETPLACE_GUIDELINES: Dict[str, Dict[str, Any]] = {
         "tone": "Artisanal, warm, conversational, handmade/lifestyle aesthetic",
         "style_instructions": (
             "- Title MUST be strictly <= 140 characters. Rich in natural, descriptive long-tail aesthetic keywords separated by pipes or commas.\n"
+            "- Do NOT invent or assume a brand name. Only include a brand name if one is explicitly provided in the product details. If no brand is given, write the title without any brand.\n"
             "- Warm, evocative, personal tone celebrating craftsmanship, texture, thoughtful design, and gifting appeal.\n"
             "- Exactly 5 bullet points highlighting handmade feel, sustainable/quality materials, gift packaging, aesthetic charm, and maker care.\n"
             "- Description: Story-driven narrative that paints a sensory picture of how the customer will enjoy or gift the piece.\n"
@@ -46,6 +49,7 @@ MARKETPLACE_GUIDELINES: Dict[str, Dict[str, Any]] = {
         "tone": "Brand-forward, inspiring, high-converting D2C direct-sales copy",
         "style_instructions": (
             "- Title: Clean, brand-focused, SEO-friendly headline (recommended <= 160 characters).\n"
+            "- Do NOT invent or assume a brand name. Only include a brand name if one is explicitly provided in the product details. If no brand is given, write the title without any brand.\n"
             "- Tone is modern, lifestyle-focused, empowering, and persuasive.\n"
             "- Exactly 5 bullet points highlighting unique value proposition (UVP), lifestyle transformation, premium craftsmanship, and customer peace of mind.\n"
             "- Description: High-converting D2C sales pitch with an emotional hook, feature-to-benefit translation, and confident call-to-action.\n"
@@ -119,5 +123,6 @@ Respond with ONLY a raw JSON object (valid JSON, no extra commentary) with these
 Remember:
 1. "bullets" MUST contain EXACTLY 5 strings.
 2. "title" MUST NOT exceed {title_limit} characters.
-3. "keywords" should contain 6 to 12 relevant search terms.
+3. Do NOT invent or assume a brand name. Only include a brand name if one is explicitly provided in the product details. If no brand is given, write the title without any brand.
+4. "keywords" should contain 6 to 12 relevant search terms.
 """
